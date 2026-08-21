@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Life Support Monitoring System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #050b12;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: 0.3s;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 850px;
+            padding: 30px;
+            background: #0b1520;
+            border: 2px solid #1683c7;
+            border-radius: 15px;
+            box-shadow: 0 0 30px #1683c755;
+        }
+
+        h1 {
+            text-align: center;
+            color: #38bdf8;
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            background: #071018;
+            border: 2px solid #1683c7;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .indicators {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .indicator {
+            background: #101d29;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #28475d;
+        }
+
+        .indicator-name {
+            color: #8ba8ba;
+            font-size: 16px;
+        }
+
+        .value {
+            font-size: 30px;
+            margin: 8px 0;
+            font-weight: bold;
+        }
+
+        .normal {
+            color: #22c55e;
+        }
+
+        .warning {
+            color: #ff3b3b;
+        }
+
+        .indicator-status {
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            background: #071018;
+            border: 1px solid #34566b;
+            border-radius: 6px;
+            color: white;
+            font-size: 18px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 25px;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #1683c7;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1da1f2;
+        }
+
+        .normal-screen {
+            background: #04150b;
+        }
+
+        .normal-screen .container {
+            border-color: #22c55e;
+            box-shadow: 0 0 40px #22c55e55;
+        }
+
+        .critical-screen {
+            background: #400000;
+            animation: redFlash 0.7s infinite;
+        }
+
+        .critical-screen .container {
+            border-color: #ff0000;
+            box-shadow: 0 0 60px red;
+        }
+
+        .critical-screen .status {
+            background: #ff0000;
+            color: white;
+            animation: warningFlash 0.5s infinite;
+        }
+
+        @keyframes redFlash {
+            0% {
+                background: #400000;
+            }
+
+            50% {
+                background: #900000;
+            }
+
+            100% {
+                background: #400000;
+            }
+        }
+
+        @keyframes warningFlash {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .indicators {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .status {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>LIFE SUPPORT MONITORING SYSTEM</h1>
+
+    <div id="status" class="status">
+        SYSTEM READY
+    </div>
+
+    <div class="indicators">
+
+        <div class="indicator">
+            <div class="indicator-name">O₂ LEVEL (%)</div>
+            <input id="o2" type="number" step="0.1" value="21">
+            <div id="o2Status" class="indicator-status normal">
+                NORMAL
+            </div>
+        </div>
+
+        <div class="indicator">
+            <div class="indicator-name">CO₂ LEVEL (%)</div>
+            <input id="co2" type="number" step="0.1" value="0.4">
+            <div id="co2Status" class="indicator-status normal">
+                NORMAL
+            </div>
+        </div>
+
+        <div class="indicator">
+            <div class="indicator-name">PRESSURE</div>
+            <input id="pressure" type="number" step="1" value="100">
+            <div id="pressureStatus" class="indicator-status normal">
+                NORMAL
+            </div>
+        </div>
+
+        <div class="indicator">
+            <div class="indicator-name">HUMIDITY (%)</div>
+            <input id="humidity" type="number" step="1" value="50">
+            <div id="humidityStatus" class="indicator-status normal">
+                NORMAL
+            </div>
+        </div>
+
+        <div class="indicator">
+            <div class="indicator-name">TEMPERATURE (°C)</div>
+            <input id="temperature" type="number" step="1" value="23">
+            <div id="temperatureStatus" class="indicator-status normal">
+                NORMAL
+            </div>
+        </div>
+
+    </div>
+
+    <button onclick="checkSystem()">
+        START SYSTEM CHECK
+    </button>
+
+</div>
+
+
+<script>
+
+let audioContext = null;
+let alarmInterval = null;
+
+
+// Проверка всей системы
+function checkSystem() {
+
+    let o2 = Number(document.getElementById("o2").value);
+    let co2 = Number(document.getElementById("co2").value);
+    let pressure = Number(document.getElementById("pressure").value);
+    let humidity = Number(document.getElementById("humidity").value);
+    let temperature = Number(document.getElementById("temperature").value);
+
+    let warnings = 0;
+
+
+    // O2
+    if (o2 >= 19.5 && o2 <= 23.5) {
+        setNormal("o2Status");
+    } else {
+        setWarning("o2Status");
+        warnings++;
+    }
+
+
+    // CO2
+    if (co2 <= 0.5) {
+        setNormal("co2Status");
+    } else {
+        setWarning("co2Status");
+        warnings++;
+    }
+
+
+    // Pressure
+    if (pressure >= 90 && pressure <= 110) {
+        setNormal("pressureStatus");
+    } else {
+        setWarning("pressureStatus");
+        warnings++;
+    }
+
+
+    // Humidity
+    if (humidity >= 25 && humidity <= 70) {
+        setNormal("humidityStatus");
+    } else {
+        setWarning("humidityStatus");
+        warnings++;
+    }
+
+
+    // Temperature
+    if (temperature >= 18 && temperature <= 27) {
+        setNormal("temperatureStatus");
+    } else {
+        setWarning("temperatureStatus");
+        warnings++;
+    }
+
+
+    // Критическая ситуация
+    if (warnings >= 3) {
+
+        document.body.className = "critical-screen";
+
+        document.getElementById("status").innerHTML =
+            "🚨 CRITICAL SITUATION 🚨<br>EVACUATE NOW";
+
+        startAlarm();
+
+    } else {
+
+        stopAlarm();
+
+        document.body.className = "normal-screen";
+
+        document.getElementById("status").innerHTML =
+            "✓ EVERYTHING IS OKAY";
+
+        successSound();
+    }
+}
+
+
+// NORMAL
+function setNormal(id) {
+
+    let element = document.getElementById(id);
+
+    element.innerHTML = "✓ NORMAL";
+    element.className = "indicator-status normal";
+}
+
+
+// WARNING
+function setWarning(id) {
+
+    let element = document.getElementById(id);
+
+    element.innerHTML = "⚠ WARNING";
+    element.className = "indicator-status warning";
+}
+
+
+// Звуковая тревога
+function startAlarm() {
+
+    if (alarmInterval !== null) {
+        return;
+    }
+
+    audioContext = new (
+        window.AudioContext ||
+        window.webkitAudioContext
+    )();
+
+    alarmInterval = setInterval(() => {
+
+        let oscillator = audioContext.createOscillator();
+        let gain = audioContext.createGain();
+
+        oscillator.frequency.value = 900;
+        oscillator.type = "square";
+
+        gain.gain.value = 0.08;
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        oscillator.start();
+
+        setTimeout(() => {
+            oscillator.stop();
+        }, 350);
+
+    }, 600);
+}
+
+
+// Остановить тревогу
+function stopAlarm() {
+
+    if (alarmInterval !== null) {
+        clearInterval(alarmInterval);
+        alarmInterval = null;
+    }
+}
+
+
+// Звук успешной проверки
+function successSound() {
+
+    let context = new (
+        window.AudioContext ||
+        window.webkitAudioContext
+    )();
+
+    let oscillator = context.createOscillator();
+    let gain = context.createGain();
+
+    oscillator.frequency.value = 800;
+    oscillator.type = "sine";
+
+    gain.gain.value = 0.08;
+
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+
+    oscillator.start();
+
+    setTimeout(() => {
+        oscillator.frequency.value = 1200;
+    }, 120);
+
+    setTimeout(() => {
+        oscillator.stop();
+    }, 250);
+}
+
+</script>
+
+</body>
+</html>
