@@ -108,7 +108,7 @@ body.critical {
     animation: pulse 1.4s infinite;
 }
 
-/* TOP STATUS */
+/* STATUS */
 
 .system-status {
     display: flex;
@@ -280,7 +280,7 @@ body.critical {
     transition: width 0.6s;
 }
 
-/* AI PANEL */
+/* AI */
 
 .ai-panel {
     background:
@@ -424,6 +424,11 @@ button.emergency {
     color: #ff7a83;
 }
 
+button.audio {
+    border-color: #28556a;
+    color: var(--cyan);
+}
+
 /* FOOTER */
 
 .footer {
@@ -516,386 +521,461 @@ body.critical .live-dot {
 
 <div class="app">
 
-    <!-- HEADER -->
+<header class="header">
 
-    <header class="header">
+    <div class="brand">
 
-        <div class="brand">
-
-            <div class="logo">
-                MF
-            </div>
-
-            <div class="title">
-                <h1>MARSFORM</h1>
-                <p>AUTONOMOUS LIFE SUPPORT CONTROL SYSTEM</p>
-            </div>
-
+        <div class="logo">
+            MF
         </div>
 
-        <div class="live">
-            <div class="live-dot"></div>
-            LIVE TELEMETRY
+        <div class="title">
+            <h1>MARSFORM</h1>
+            <p>AUTONOMOUS LIFE SUPPORT CONTROL SYSTEM</p>
         </div>
 
-    </header>
+    </div>
 
+    <div class="live">
+        <div class="live-dot"></div>
+        LIVE TELEMETRY
+    </div>
 
-    <!-- SYSTEM STATUS -->
+</header>
 
-    <section class="system-status">
 
-        <div class="status-main">
+<section class="system-status">
 
-            <div id="statusLight" class="status-light"></div>
+    <div class="status-main">
 
-            <div class="status-text">
+        <div id="statusLight" class="status-light"></div>
 
-                <strong id="systemStatus">
-                    SYSTEM OPERATIONAL
-                </strong>
+        <div class="status-text">
 
-                <span id="statusDescription">
-                    All life-support parameters within safe limits
-                </span>
+            <strong id="systemStatus">
+                SYSTEM OPERATIONAL
+            </strong>
 
-            </div>
-
-        </div>
-
-        <div class="system-id">
-
-            HABITAT: MARS-01<br>
-            AI CORE: ONLINE<br>
-            UPLINK: STABLE
-
-        </div>
-
-    </section>
-
-
-    <div class="dashboard">
-
-        <!-- TELEMETRY -->
-
-        <div>
-
-            <section class="panel">
-
-                <div class="panel-title">
-
-                    <h2>LIVE TELEMETRY</h2>
-
-                    <span id="updateTime">
-                        --:--:--
-                    </span>
-
-                </div>
-
-
-                <div class="telemetry-grid">
-
-                    <div id="sensor-o2" class="sensor">
-
-                        <div class="sensor-name">
-                            OXYGEN CONCENTRATION
-                        </div>
-
-                        <div class="sensor-value">
-                            <span id="o2Value">21.0</span>
-                            <span class="sensor-unit">%</span>
-                        </div>
-
-                        <div class="bar">
-                            <div id="o2Bar" class="bar-fill"></div>
-                        </div>
-
-                        <div class="sensor-footer">
-
-                            <div id="o2Status" class="sensor-status">
-                                ● NORMAL
-                            </div>
-
-                            <div class="sensor-signal">
-                                SENSOR-01
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div id="sensor-co2" class="sensor">
-
-                        <div class="sensor-name">
-                            CARBON DIOXIDE
-                        </div>
-
-                        <div class="sensor-value">
-                            <span id="co2Value">0.40</span>
-                            <span class="sensor-unit">%</span>
-                        </div>
-
-                        <div class="bar">
-                            <div id="co2Bar" class="bar-fill"></div>
-                        </div>
-
-                        <div class="sensor-footer">
-
-                            <div id="co2Status" class="sensor-status">
-                                ● NORMAL
-                            </div>
-
-                            <div class="sensor-signal">
-                                SENSOR-02
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div id="sensor-pressure" class="sensor">
-
-                        <div class="sensor-name">
-                            HABITAT PRESSURE
-                        </div>
-
-                        <div class="sensor-value">
-                            <span id="pressureValue">100</span>
-                            <span class="sensor-unit">kPa</span>
-                        </div>
-
-                        <div class="bar">
-                            <div id="pressureBar" class="bar-fill"></div>
-                        </div>
-
-                        <div class="sensor-footer">
-
-                            <div id="pressureStatus" class="sensor-status">
-                                ● NORMAL
-                            </div>
-
-                            <div class="sensor-signal">
-                                SENSOR-03
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div id="sensor-temperature" class="sensor">
-
-                        <div class="sensor-name">
-                            INTERNAL TEMPERATURE
-                        </div>
-
-                        <div class="sensor-value">
-                            <span id="temperatureValue">22.0</span>
-                            <span class="sensor-unit">°C</span>
-                        </div>
-
-                        <div class="bar">
-                            <div id="temperatureBar" class="bar-fill"></div>
-                        </div>
-
-                        <div class="sensor-footer">
-
-                            <div id="temperatureStatus" class="sensor-status">
-                                ● NORMAL
-                            </div>
-
-                            <div class="sensor-signal">
-                                SENSOR-04
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div id="sensor-humidity" class="sensor">
-
-                        <div class="sensor-name">
-                            HUMIDITY
-                        </div>
-
-                        <div class="sensor-value">
-                            <span id="humidityValue">50</span>
-                            <span class="sensor-unit">%</span>
-                        </div>
-
-                        <div class="bar">
-                            <div id="humidityBar" class="bar-fill"></div>
-                        </div>
-
-                        <div class="sensor-footer">
-
-                            <div id="humidityStatus" class="sensor-status">
-                                ● NORMAL
-                            </div>
-
-                            <div class="sensor-signal">
-                                SENSOR-05
-                            </div>
-
-                        </div>
-
-                    </div>
-
-
-                    <div id="sensor-water" class="sensor">
-
-                        <div class="sensor-name">
-                            WATER RESERVE
-                        </div>
-
-                        <div class="sensor-value">
-                            <span id="waterValue">82</span>
-                            <span class="sensor-unit">%</span>
-                        </div>
-
-                        <div class="bar">
-                            <div id="waterBar" class="bar-fill"></div>
-                        </div>
-
-                        <div class="sensor-footer">
-
-                            <div id="waterStatus" class="sensor-status">
-                                ● NORMAL
-                            </div>
-
-                            <div class="sensor-signal">
-                                SENSOR-06
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- GRAPH -->
-
-            <section class="panel graph-panel">
-
-                <div class="panel-title">
-
-                    <h2>TELEMETRY HISTORY</h2>
-
-                    <span>LAST 30 READINGS</span>
-
-                </div>
-
-                <div id="graph" class="graph"></div>
-
-            </section>
-
-        </div>
-
-
-        <!-- AI -->
-
-        <div>
-
-            <section class="panel ai-panel">
-
-                <div class="panel-title">
-
-                    <h2>AI DECISION ENGINE</h2>
-
-                    <span>MF-AI CORE</span>
-
-                </div>
-
-
-                <div class="ai-header">
-
-                    <div class="ai-icon">
-                        AI
-                    </div>
-
-                    <div>
-                        <strong id="aiState">
-                            MONITORING
-                        </strong>
-
-                        <span>
-                            Autonomous analysis active
-                        </span>
-                    </div>
-
-                </div>
-
-
-                <div id="aiMessage" class="ai-message">
-
-                    Receiving telemetry from life-support
-                    subsystems.<br><br>
-
-                    No abnormal conditions detected.
-
-                </div>
-
-
-                <div id="aiAction" class="ai-action">
-
-                    ACTION: Continuous monitoring
-
-                </div>
-
-            </section>
-
-
-            <!-- EVENT LOG -->
-
-            <section class="panel" style="margin-top:18px">
-
-                <div class="panel-title">
-
-                    <h2>SYSTEM EVENT LOG</h2>
-
-                    <span>LIVE</span>
-
-                </div>
-
-                <div id="log" class="log"></div>
-
-            </section>
-
-
-            <!-- CONTROLS -->
-
-            <div class="controls">
-
-                <button onclick="simulateEmergency()" class="emergency">
-                    SIMULATE EMERGENCY
-                </button>
-
-                <button onclick="resetSystem()">
-                    RESET SYSTEM
-                </button>
-
-            </div>
+            <span id="statusDescription">
+                All life-support parameters within safe limits
+            </span>
 
         </div>
 
     </div>
 
+    <div class="system-id">
 
-    <div class="footer">
+        HABITAT: MARS-01<br>
+        AI CORE: ONLINE<br>
+        UPLINK: STABLE
 
-        <span>MARSFORM // AUTONOMOUS HABITAT SYSTEM</span>
+    </div>
+
+</section>
+
+
+<div class="dashboard">
+
+<div>
+
+<section class="panel">
+
+<div class="panel-title">
+
+    <h2>LIVE TELEMETRY</h2>
+
+    <span id="updateTime">
+        --:--:--
+    </span>
+
+</div>
+
+
+<div class="telemetry-grid">
+
+
+<!-- O2 -->
+
+<div id="sensor-o2" class="sensor">
+
+    <div class="sensor-name">
+        OXYGEN CONCENTRATION
+    </div>
+
+    <div class="sensor-value">
+        <span id="o2Value">21.0</span>
+        <span class="sensor-unit">%</span>
+    </div>
+
+    <div class="bar">
+        <div id="o2Bar" class="bar-fill"></div>
+    </div>
+
+    <div class="sensor-footer">
+
+        <div id="o2Status" class="sensor-status">
+            ● NORMAL
+        </div>
+
+        <div class="sensor-signal">
+            SENSOR-01
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- CO2 -->
+
+<div id="sensor-co2" class="sensor">
+
+    <div class="sensor-name">
+        CARBON DIOXIDE
+    </div>
+
+    <div class="sensor-value">
+        <span id="co2Value">0.40</span>
+        <span class="sensor-unit">%</span>
+    </div>
+
+    <div class="bar">
+        <div id="co2Bar" class="bar-fill"></div>
+    </div>
+
+    <div class="sensor-footer">
+
+        <div id="co2Status" class="sensor-status">
+            ● NORMAL
+        </div>
+
+        <div class="sensor-signal">
+            SENSOR-02
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- PRESSURE -->
+
+<div id="sensor-pressure" class="sensor">
+
+    <div class="sensor-name">
+        HABITAT PRESSURE
+    </div>
+
+    <div class="sensor-value">
+        <span id="pressureValue">100</span>
+        <span class="sensor-unit">kPa</span>
+    </div>
+
+    <div class="bar">
+        <div id="pressureBar" class="bar-fill"></div>
+    </div>
+
+    <div class="sensor-footer">
+
+        <div id="pressureStatus" class="sensor-status">
+            ● NORMAL
+        </div>
+
+        <div class="sensor-signal">
+            SENSOR-03
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- TEMPERATURE -->
+
+<div id="sensor-temperature" class="sensor">
+
+    <div class="sensor-name">
+        INTERNAL TEMPERATURE
+    </div>
+
+    <div class="sensor-value">
+        <span id="temperatureValue">22.0</span>
+        <span class="sensor-unit">°C</span>
+    </div>
+
+    <div class="bar">
+        <div id="temperatureBar" class="bar-fill"></div>
+    </div>
+
+    <div class="sensor-footer">
+
+        <div id="temperatureStatus" class="sensor-status">
+            ● NORMAL
+        </div>
+
+        <div class="sensor-signal">
+            SENSOR-04
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- HUMIDITY -->
+
+<div id="sensor-humidity" class="sensor">
+
+    <div class="sensor-name">
+        HUMIDITY
+    </div>
+
+    <div class="sensor-value">
+        <span id="humidityValue">50</span>
+        <span class="sensor-unit">%</span>
+    </div>
+
+    <div class="bar">
+        <div id="humidityBar" class="bar-fill"></div>
+    </div>
+
+    <div class="sensor-footer">
+
+        <div id="humidityStatus" class="sensor-status">
+            ● NORMAL
+        </div>
+
+        <div class="sensor-signal">
+            SENSOR-05
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- WATER -->
+
+<div id="sensor-water" class="sensor">
+
+    <div class="sensor-name">
+        WATER RESERVE
+    </div>
+
+    <div class="sensor-value">
+        <span id="waterValue">82</span>
+        <span class="sensor-unit">%</span>
+    </div>
+
+    <div class="bar">
+        <div id="waterBar" class="bar-fill"></div>
+    </div>
+
+    <div class="sensor-footer">
+
+        <div id="waterStatus" class="sensor-status">
+            ● NORMAL
+        </div>
+
+        <div class="sensor-signal">
+            SENSOR-06
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SOLAR PANEL POSITION -->
+
+<div id="sensor-solar" class="sensor">
+
+    <div class="sensor-name">
+        SOLAR PANEL POSITION
+    </div>
+
+    <div class="sensor-value">
+        <span id="solarAngleValue">45</span>
+        <span class="sensor-unit">°</span>
+    </div>
+
+    <div class="bar">
+        <div id="solarBar" class="bar-fill"></div>
+    </div>
+
+    <div class="sensor-footer">
+
+        <div id="solarStatus" class="sensor-status">
+            ● OPTIMAL
+        </div>
+
+        <div class="sensor-signal">
+            SENSOR-07
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- SOLAR POWER -->
+
+<div id="sensor-power" class="sensor">
+
+    <div class="sensor-name">
+        SOLAR POWER OUTPUT
+    </div>
+
+    <div class="sensor-value">
+        <span id="solarPowerValue">4.5</span>
+        <span class="sensor-unit">kW</span>
+    </div>
+
+    <div class="bar">
+        <div id="powerBar" class="bar-fill"></div>
+    </div>
+
+    <div class="sensor-footer">
+
+        <div id="powerStatus" class="sensor-status">
+            ● NORMAL
+        </div>
+
+        <div class="sensor-signal">
+            SENSOR-08
+        </div>
+
+    </div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+<section class="panel graph-panel">
+
+<div class="panel-title">
+
+    <h2>TELEMETRY HISTORY</h2>
+
+    <span>LAST 30 READINGS</span>
+
+</div>
+
+<div id="graph" class="graph"></div>
+
+</section>
+
+</div>
+
+
+<!-- RIGHT SIDE -->
+
+<div>
+
+
+<section class="panel ai-panel">
+
+<div class="panel-title">
+
+    <h2>AI DECISION ENGINE</h2>
+
+    <span>MF-AI CORE</span>
+
+</div>
+
+
+<div class="ai-header">
+
+    <div class="ai-icon">
+        AI
+    </div>
+
+    <div>
+
+        <strong id="aiState">
+            MONITORING
+        </strong>
 
         <span>
-            TELEMETRY SIMULATION MODE
+            Autonomous analysis active
         </span>
 
     </div>
+
+</div>
+
+
+<div id="aiMessage" class="ai-message">
+
+    Receiving telemetry from life-support
+    subsystems.<br><br>
+
+    No abnormal conditions detected.
+
+</div>
+
+
+<div id="aiAction" class="ai-action">
+
+    ACTION: Continuous monitoring
+
+</div>
+
+</section>
+
+
+<section class="panel" style="margin-top:18px">
+
+<div class="panel-title">
+
+    <h2>SYSTEM EVENT LOG</h2>
+
+    <span>LIVE</span>
+
+</div>
+
+<div id="log" class="log"></div>
+
+</section>
+
+
+<div class="controls">
+
+    <button onclick="simulateEmergency()" class="emergency">
+        SIMULATE EMERGENCY
+    </button>
+
+    <button onclick="resetSystem()">
+        RESET SYSTEM
+    </button>
+
+    <button onclick="enableAudio()" class="audio">
+        ENABLE ALERT SOUND
+    </button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="footer">
+
+    <span>
+        MARSFORM // AUTONOMOUS HABITAT SYSTEM
+    </span>
+
+    <span>
+        TELEMETRY SIMULATION MODE
+    </span>
+
+</div>
 
 </div>
 
@@ -910,8 +990,17 @@ MARSFORM TELEMETRY SIMULATION
 В демонстрационной версии реальные датчики заменены
 программным генератором телеметрии.
 
-В реальной системе значения будут поступать
-непосредственно от физических датчиков базы.
+В реальной системе данные поступают от физических
+датчиков марсианской базы.
+
+Физическая модель включает:
+- атмосферные параметры;
+- давление;
+- температуру;
+- влажность;
+- запас воды;
+- положение солнечной панели;
+- солнечную генерацию энергии.
 ====================================================
 */
 
@@ -923,7 +1012,10 @@ let telemetry = {
     pressure: 100,
     temperature: 22,
     humidity: 50,
-    water: 82
+    water: 82,
+
+    solarAngle: 45,
+    solarPower: 4.5
 
 };
 
@@ -932,19 +1024,24 @@ let emergencyMode = false;
 
 let graphData = [];
 
-let previousCritical = 0;
+let alarmActive = false;
+
+let alarmTimer = null;
+
+let audioContext = null;
 
 
-/* -------------------------------------------------
-   ПЛАВНОЕ ИЗМЕНЕНИЕ ЗНАЧЕНИЙ
-------------------------------------------------- */
+/* ==================================================
+   SMOOTH SENSOR MOVEMENT
+================================================== */
 
 function drift(value, min, max, speed) {
 
     let change =
         (Math.random() - 0.5) * speed;
 
-    let result = value + change;
+    let result =
+        value + change;
 
     return Math.max(
         min,
@@ -953,9 +1050,9 @@ function drift(value, min, max, speed) {
 }
 
 
-/* -------------------------------------------------
-   ОБНОВЛЕНИЕ ТЕЛЕМЕТРИИ
-------------------------------------------------- */
+/* ==================================================
+   TELEMETRY UPDATE
+================================================== */
 
 function updateTelemetry() {
 
@@ -969,6 +1066,7 @@ function updateTelemetry() {
                 0.12
             );
 
+
         telemetry.co2 =
             drift(
                 telemetry.co2,
@@ -976,6 +1074,7 @@ function updateTelemetry() {
                 0.48,
                 0.025
             );
+
 
         telemetry.pressure =
             drift(
@@ -985,6 +1084,7 @@ function updateTelemetry() {
                 0.7
             );
 
+
         telemetry.temperature =
             drift(
                 telemetry.temperature,
@@ -992,6 +1092,7 @@ function updateTelemetry() {
                 24,
                 0.35
             );
+
 
         telemetry.humidity =
             drift(
@@ -1001,6 +1102,7 @@ function updateTelemetry() {
                 1
             );
 
+
         telemetry.water =
             drift(
                 telemetry.water,
@@ -1008,6 +1110,47 @@ function updateTelemetry() {
                 84,
                 0.08
             );
+
+
+        /*
+        Солнечная панель автоматически меняет
+        положение относительно условного Солнца.
+        */
+
+        telemetry.solarAngle =
+            drift(
+                telemetry.solarAngle,
+                15,
+                75,
+                2
+            );
+
+
+        /*
+        Эффективность зависит от отклонения
+        от оптимального угла 45°.
+        */
+
+        let angleDifference =
+            Math.abs(
+                telemetry.solarAngle - 45
+            );
+
+
+        let efficiency =
+            Math.max(
+                0.35,
+                1 - angleDifference / 60
+            );
+
+
+        /*
+        Максимальная мощность демонстрационной
+        панели = 5 kW.
+        */
+
+        telemetry.solarPower =
+            5 * efficiency;
 
     }
 
@@ -1023,55 +1166,100 @@ function updateTelemetry() {
 }
 
 
-/* -------------------------------------------------
-   ОТОБРАЖЕНИЕ ДАННЫХ
-------------------------------------------------- */
+/* ==================================================
+   RENDER TELEMETRY
+================================================== */
 
 function renderTelemetry() {
 
     document.getElementById("o2Value").textContent =
         telemetry.o2.toFixed(1);
 
+
     document.getElementById("co2Value").textContent =
         telemetry.co2.toFixed(2);
+
 
     document.getElementById("pressureValue").textContent =
         telemetry.pressure.toFixed(1);
 
+
     document.getElementById("temperatureValue").textContent =
         telemetry.temperature.toFixed(1);
 
+
     document.getElementById("humidityValue").textContent =
         Math.round(telemetry.humidity);
+
 
     document.getElementById("waterValue").textContent =
         Math.round(telemetry.water);
 
 
+    document.getElementById("solarAngleValue").textContent =
+        Math.round(telemetry.solarAngle);
+
+
+    document.getElementById("solarPowerValue").textContent =
+        telemetry.solarPower.toFixed(2);
+
+
+    /* BARS */
+
     document.getElementById("o2Bar").style.width =
         (telemetry.o2 / 25 * 100) + "%";
 
+
     document.getElementById("co2Bar").style.width =
-        Math.min(100, telemetry.co2 / 1 * 100) + "%";
+        Math.min(
+            100,
+            telemetry.co2 / 1 * 100
+        ) + "%";
+
 
     document.getElementById("pressureBar").style.width =
         (telemetry.pressure / 120 * 100) + "%";
 
+
     document.getElementById("temperatureBar").style.width =
         ((telemetry.temperature + 10) / 50 * 100) + "%";
+
 
     document.getElementById("humidityBar").style.width =
         telemetry.humidity + "%";
 
+
     document.getElementById("waterBar").style.width =
         telemetry.water + "%";
+
+
+    /*
+    Чем ближе угол к 45°, тем эффективнее панель.
+    */
+
+    let solarEfficiency =
+        Math.max(
+            0,
+            100 -
+            Math.abs(
+                telemetry.solarAngle - 45
+            ) * 1.6
+        );
+
+
+    document.getElementById("solarBar").style.width =
+        solarEfficiency + "%";
+
+
+    document.getElementById("powerBar").style.width =
+        (telemetry.solarPower / 5 * 100) + "%";
 
 }
 
 
-/* -------------------------------------------------
-   АНАЛИЗ СИСТЕМЫ
-------------------------------------------------- */
+/* ==================================================
+   SYSTEM ANALYSIS
+================================================== */
 
 function analyseSystem() {
 
@@ -1080,7 +1268,7 @@ function analyseSystem() {
     let warnings = 0;
 
 
-    // O2
+    /* O2 */
 
     if (
         telemetry.o2 < 19.5 ||
@@ -1106,7 +1294,7 @@ function analyseSystem() {
     }
 
 
-    // CO2
+    /* CO2 */
 
     if (telemetry.co2 > 0.8) {
 
@@ -1139,7 +1327,7 @@ function analyseSystem() {
     }
 
 
-    // Pressure
+    /* PRESSURE */
 
     if (
         telemetry.pressure < 90 ||
@@ -1178,7 +1366,7 @@ function analyseSystem() {
     }
 
 
-    // Temperature
+    /* TEMPERATURE */
 
     if (
         telemetry.temperature < 15 ||
@@ -1217,7 +1405,7 @@ function analyseSystem() {
     }
 
 
-    // Humidity
+    /* HUMIDITY */
 
     if (
         telemetry.humidity < 20 ||
@@ -1256,7 +1444,7 @@ function analyseSystem() {
     }
 
 
-    // Water
+    /* WATER */
 
     if (telemetry.water < 25) {
 
@@ -1289,9 +1477,66 @@ function analyseSystem() {
     }
 
 
-    /* ---------------------------------------------
-       AI DECISION
-    --------------------------------------------- */
+    /* SOLAR PANEL */
+
+    if (
+        telemetry.solarAngle >= 30 &&
+        telemetry.solarAngle <= 60
+    ) {
+
+        setSensor(
+            "sensor-solar",
+            "solarStatus",
+            "OPTIMAL"
+        );
+
+    } else {
+
+        warnings++;
+
+        setSensor(
+            "sensor-solar",
+            "solarStatus",
+            "WARNING"
+        );
+
+    }
+
+
+    /* SOLAR POWER */
+
+    if (telemetry.solarPower < 2) {
+
+        critical++;
+
+        setSensor(
+            "sensor-power",
+            "powerStatus",
+            "CRITICAL"
+        );
+
+    } else if (telemetry.solarPower < 3.5) {
+
+        warnings++;
+
+        setSensor(
+            "sensor-power",
+            "powerStatus",
+            "WARNING"
+        );
+
+    } else {
+
+        setSensor(
+            "sensor-power",
+            "powerStatus",
+            "NORMAL"
+        );
+
+    }
+
+
+    /* AI DECISION */
 
     if (critical >= 3) {
 
@@ -1314,11 +1559,15 @@ function analyseSystem() {
 }
 
 
-/* -------------------------------------------------
+/* ==================================================
    SENSOR STATUS
-------------------------------------------------- */
+================================================== */
 
-function setSensor(sensorId, statusId, state) {
+function setSensor(
+    sensorId,
+    statusId,
+    state
+) {
 
     let sensor =
         document.getElementById(sensorId);
@@ -1333,17 +1582,24 @@ function setSensor(sensorId, statusId, state) {
     );
 
 
-    if (state === "NORMAL") {
+    if (
+        state === "NORMAL" ||
+        state === "OPTIMAL"
+    ) {
 
         status.textContent =
-            "● NORMAL";
+            state === "OPTIMAL"
+            ? "● OPTIMAL"
+            : "● NORMAL";
 
     }
 
 
     if (state === "WARNING") {
 
-        sensor.classList.add("warning");
+        sensor.classList.add(
+            "warning"
+        );
 
         status.textContent =
             "● WARNING";
@@ -1353,7 +1609,9 @@ function setSensor(sensorId, statusId, state) {
 
     if (state === "CRITICAL") {
 
-        sensor.classList.add("critical");
+        sensor.classList.add(
+            "critical"
+        );
 
         status.textContent =
             "● CRITICAL";
@@ -1363,13 +1621,17 @@ function setSensor(sensorId, statusId, state) {
 }
 
 
-/* -------------------------------------------------
+/* ==================================================
    NORMAL
-------------------------------------------------- */
+================================================== */
 
 function activateNormal() {
 
-    document.body.classList.remove("critical");
+    document.body.classList.remove(
+        "critical"
+    );
+
+    stopAlarm();
 
 
     document.getElementById("systemStatus")
@@ -1390,7 +1652,7 @@ function activateNormal() {
     document.getElementById("aiMessage")
         .innerHTML =
         "Receiving telemetry from life-support subsystems.<br><br>" +
-        "No abnormal conditions detected.";
+        "Atmosphere, thermal control, water reserves and solar energy are stable.";
 
 
     document.getElementById("aiAction")
@@ -1400,13 +1662,17 @@ function activateNormal() {
 }
 
 
-/* -------------------------------------------------
+/* ==================================================
    WARNING
-------------------------------------------------- */
+================================================== */
 
 function activateWarning(count) {
 
-    document.body.classList.remove("critical");
+    document.body.classList.remove(
+        "critical"
+    );
+
+    stopAlarm();
 
 
     document.getElementById("systemStatus")
@@ -1433,18 +1699,37 @@ function activateWarning(count) {
 
     document.getElementById("aiAction")
         .textContent =
-        "ACTION: Adjusting life-support parameters";
+        "ACTION: Optimising life-support and energy systems";
 
 }
 
 
-/* -------------------------------------------------
+/* ==================================================
    CRITICAL
-------------------------------------------------- */
+================================================== */
 
 function activateCritical() {
 
-    document.body.classList.add("critical");
+    document.body.classList.add(
+        "critical"
+    );
+
+
+    /*
+    Запускаем тревогу только при переходе
+    в критическое состояние.
+    */
+
+    if (!alarmActive) {
+
+        startAlarm();
+
+        addLog(
+            "AI EMERGENCY PROTOCOL ACTIVATED",
+            true
+        );
+
+    }
 
 
     document.getElementById("systemStatus")
@@ -1477,13 +1762,202 @@ function activateCritical() {
 }
 
 
-/* -------------------------------------------------
-   ВРЕМЯ
-------------------------------------------------- */
+/* ==================================================
+   AUDIO SYSTEM
+================================================== */
+
+function createAudioContext() {
+
+    if (!audioContext) {
+
+        audioContext =
+            new (
+                window.AudioContext ||
+                window.webkitAudioContext
+            )();
+
+    }
+
+}
+
+
+/*
+Разрешение браузера на звук.
+Нажимается один раз перед демонстрацией.
+*/
+
+function enableAudio() {
+
+    createAudioContext();
+
+    if (
+        audioContext.state === "suspended"
+    ) {
+
+        audioContext.resume();
+
+    }
+
+
+    /*
+    Короткий тестовый звук.
+    */
+
+    let oscillator =
+        audioContext.createOscillator();
+
+    let gain =
+        audioContext.createGain();
+
+
+    oscillator.type =
+        "sine";
+
+    oscillator.frequency.value =
+        650;
+
+    gain.gain.value =
+        0.04;
+
+
+    oscillator.connect(gain);
+
+    gain.connect(
+        audioContext.destination
+    );
+
+
+    oscillator.start();
+
+
+    oscillator.stop(
+        audioContext.currentTime + 0.15
+    );
+
+
+    addLog(
+        "ALERT AUDIO CHANNEL ENABLED"
+    );
+
+}
+
+
+/*
+Основной аварийный сигнал.
+*/
+
+function startAlarm() {
+
+    if (alarmActive) {
+        return;
+    }
+
+
+    createAudioContext();
+
+
+    if (
+        audioContext.state === "suspended"
+    ) {
+
+        audioContext.resume();
+
+    }
+
+
+    alarmActive = true;
+
+
+    function beep() {
+
+        if (!alarmActive) {
+            return;
+        }
+
+
+        let oscillator =
+            audioContext.createOscillator();
+
+        let gain =
+            audioContext.createGain();
+
+
+        oscillator.type =
+            "square";
+
+
+        oscillator.frequency.setValueAtTime(
+            900,
+            audioContext.currentTime
+        );
+
+
+        gain.gain.setValueAtTime(
+            0.07,
+            audioContext.currentTime
+        );
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+            audioContext.destination
+        );
+
+
+        oscillator.start();
+
+
+        oscillator.stop(
+            audioContext.currentTime + 0.25
+        );
+
+    }
+
+
+    beep();
+
+
+    alarmTimer =
+        setInterval(
+            beep,
+            650
+        );
+
+}
+
+
+/*
+Остановка тревоги.
+*/
+
+function stopAlarm() {
+
+    alarmActive = false;
+
+
+    if (alarmTimer) {
+
+        clearInterval(
+            alarmTimer
+        );
+
+        alarmTimer = null;
+
+    }
+
+}
+
+
+/* ==================================================
+   CLOCK
+================================================== */
 
 function updateClock() {
 
-    let now = new Date();
+    let now =
+        new Date();
+
 
     document.getElementById("updateTime")
         .textContent =
@@ -1492,9 +1966,9 @@ function updateClock() {
 }
 
 
-/* -------------------------------------------------
-   ГРАФИК
-------------------------------------------------- */
+/* ==================================================
+   GRAPH
+================================================== */
 
 function updateGraph() {
 
@@ -1507,8 +1981,12 @@ function updateGraph() {
     );
 
 
-    if (graphData.length > 30) {
+    if (
+        graphData.length > 30
+    ) {
+
         graphData.shift();
+
     }
 
 
@@ -1522,48 +2000,67 @@ function updateGraph() {
         Math.max(...graphData);
 
 
-    graphData.forEach(value => {
+    graphData.forEach(
+        value => {
 
-        let bar =
-            document.createElement("div");
-
-        bar.className =
-            "graph-bar";
-
-
-        let height =
-            ((value - min) /
-            ((max - min) || 1)) *
-            100;
+            let bar =
+                document.createElement(
+                    "div"
+                );
 
 
-        bar.style.height =
-            Math.max(10, height) + "%";
+            bar.className =
+                "graph-bar";
 
 
-        graph.appendChild(bar);
+            let height =
+                (
+                    (value - min) /
+                    ((max - min) || 1)
+                ) * 100;
 
-    });
+
+            bar.style.height =
+                Math.max(
+                    10,
+                    height
+                ) + "%";
+
+
+            graph.appendChild(
+                bar
+            );
+
+        }
+    );
 
 }
 
 
-/* -------------------------------------------------
+/* ==================================================
    EVENT LOG
-------------------------------------------------- */
+================================================== */
 
-function addLog(message, alert = false) {
+function addLog(
+    message,
+    alert = false
+) {
 
     let log =
-        document.getElementById("log");
+        document.getElementById(
+            "log"
+        );
 
 
     let time =
-        new Date().toLocaleTimeString();
+        new Date()
+        .toLocaleTimeString();
 
 
     let entry =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     entry.className =
@@ -1572,35 +2069,76 @@ function addLog(message, alert = false) {
 
     entry.innerHTML =
 
-        `<div class="log-time">${time}</div>
-         <div class="${alert ? "log-alert" : "log-info"}">
-         ${message}
-         </div>`;
+        `<div class="log-time">
+            ${time}
+        </div>
+
+        <div class="${alert
+            ? "log-alert"
+            : "log-info"}">
+
+            ${message}
+
+        </div>`;
 
 
-    log.prepend(entry);
+    log.prepend(
+        entry
+    );
 
 
-    if (log.children.length > 7) {
-        log.removeChild(log.lastChild);
+    if (
+        log.children.length > 7
+    ) {
+
+        log.removeChild(
+            log.lastChild
+        );
+
     }
 
 }
 
 
-/* -------------------------------------------------
+/* ==================================================
    EMERGENCY SIMULATION
-------------------------------------------------- */
+================================================== */
 
 function simulateEmergency() {
+
+    /*
+    Нажатие кнопки является пользовательским
+    действием, поэтому браузер разрешает звук.
+    */
+
+    createAudioContext();
+
+    audioContext.resume();
+
 
     emergencyMode = true;
 
 
+    /*
+    Создаём одновременно несколько
+    физических аномалий.
+    */
+
     telemetry.o2 = 17.2;
+
     telemetry.co2 = 1.2;
+
     telemetry.pressure = 84;
+
     telemetry.temperature = 30;
+
+    telemetry.humidity = 82;
+
+    telemetry.water = 20;
+
+    telemetry.solarAngle = 78;
+
+    telemetry.solarPower = 1.6;
 
 
     addLog(
@@ -1614,13 +2152,15 @@ function simulateEmergency() {
 }
 
 
-/* -------------------------------------------------
+/* ==================================================
    RESET
-------------------------------------------------- */
+================================================== */
 
 function resetSystem() {
 
     emergencyMode = false;
+
+    stopAlarm();
 
 
     telemetry = {
@@ -1630,9 +2170,17 @@ function resetSystem() {
         pressure: 100,
         temperature: 22,
         humidity: 50,
-        water: 82
+        water: 82,
+
+        solarAngle: 45,
+        solarPower: 4.5
 
     };
+
+
+    document.body.classList.remove(
+        "critical"
+    );
 
 
     addLog(
@@ -1645,9 +2193,9 @@ function resetSystem() {
 }
 
 
-/* -------------------------------------------------
-   START
-------------------------------------------------- */
+/* ==================================================
+   INITIALIZATION
+================================================== */
 
 addLog(
     "MARSFORM AI CORE INITIALIZED"
@@ -1658,16 +2206,25 @@ addLog(
 );
 
 addLog(
-    "Life-support monitoring started"
+    "PHYSICAL SENSOR MODEL INITIALIZED"
 );
+
+addLog(
+    "SOLAR TRACKING SYSTEM ONLINE"
+);
+
+addLog(
+    "LIFE-SUPPORT MONITORING STARTED"
+);
+
+
+updateTelemetry();
 
 
 /*
 Каждые 2 секунды система получает
 новую порцию виртуальной телеметрии.
 */
-
-updateTelemetry();
 
 setInterval(
     updateTelemetry,
