@@ -7,6 +7,7 @@
 <title>MarsForm — AI Life Support Control</title>
 
 <style>
+
 * {
     box-sizing: border-box;
 }
@@ -152,7 +153,7 @@ body.critical {
     line-height: 1.8;
 }
 
-/* LAYOUT */
+/* DASHBOARD */
 
 .dashboard {
     display: grid;
@@ -263,8 +264,6 @@ body.critical {
     color: var(--muted);
 }
 
-/* BAR */
-
 .bar {
     height: 4px;
     background: #17232c;
@@ -334,6 +333,109 @@ body.critical {
     font-size: 12px;
 }
 
+/* PREDICTION */
+
+.prediction {
+    margin-top: 18px;
+}
+
+.prediction-box {
+    background: #070d12;
+    border: 1px solid #1b2b35;
+    border-radius: 9px;
+    padding: 15px;
+}
+
+.prediction-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.prediction-label {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+}
+
+.prediction-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: var(--green);
+}
+
+.prediction-description {
+    margin-top: 10px;
+    color: #a9bdc7;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.risk-bar {
+    height: 7px;
+    background: #17232c;
+    border-radius: 5px;
+    margin-top: 13px;
+    overflow: hidden;
+}
+
+.risk-fill {
+    height: 100%;
+    width: 4%;
+    background: var(--green);
+    transition: 0.6s;
+}
+
+/* COST */
+
+.cost-panel {
+    margin-top: 18px;
+}
+
+.cost-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.cost-card {
+    background: #070d12;
+    border: 1px solid #1b2b35;
+    border-radius: 8px;
+    padding: 13px;
+}
+
+.cost-label {
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.cost-value {
+    margin-top: 7px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.savings {
+    margin-top: 12px;
+    padding: 13px;
+    border-left: 3px solid var(--green);
+    background: #07140e;
+}
+
+.savings-label {
+    color: var(--muted);
+    font-size: 10px;
+}
+
+.savings-value {
+    color: var(--green);
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
 /* GRAPH */
 
 .graph-panel {
@@ -366,7 +468,7 @@ body.critical {
     transition: height 0.5s;
 }
 
-/* EVENT LOG */
+/* LOG */
 
 .log {
     max-height: 230px;
@@ -424,22 +526,6 @@ button.emergency {
     color: #ff7a83;
 }
 
-button.audio {
-    border-color: #28556a;
-    color: var(--cyan);
-}
-
-/* FOOTER */
-
-.footer {
-    margin-top: 18px;
-    display: flex;
-    justify-content: space-between;
-    color: var(--muted);
-    font-size: 10px;
-    letter-spacing: 1px;
-}
-
 /* CRITICAL */
 
 body.critical .system-status {
@@ -479,41 +565,20 @@ body.critical .live-dot {
 
 @media(max-width: 600px) {
 
-    .app {
-        width: 94%;
-    }
-
-    .header {
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .title h1 {
-        font-size: 18px;
-    }
-
-    .live {
-        font-size: 10px;
-    }
-
-    .system-status {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-
-    .system-id {
-        text-align: left;
-    }
-
     .telemetry-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cost-grid {
         grid-template-columns: 1fr;
     }
 
     .controls {
         flex-direction: column;
     }
+
 }
+
 </style>
 </head>
 
@@ -523,71 +588,75 @@ body.critical .live-dot {
 
 <header class="header">
 
-    <div class="brand">
+<div class="brand">
 
-        <div class="logo">
-            MF
-        </div>
+<div class="logo">MF</div>
 
-        <div class="title">
-            <h1>MARSFORM</h1>
-            <p>AUTONOMOUS LIFE SUPPORT CONTROL SYSTEM</p>
-        </div>
+<div class="title">
 
-    </div>
+<h1>MARSFORM</h1>
 
-    <div class="live">
-        <div class="live-dot"></div>
-        LIVE TELEMETRY
-    </div>
+<p>AUTONOMOUS LIFE SUPPORT CONTROL SYSTEM</p>
+
+</div>
+
+</div>
+
+<div class="live">
+
+<div class="live-dot"></div>
+
+LIVE TELEMETRY
+
+</div>
 
 </header>
 
 
 <section class="system-status">
 
-    <div class="status-main">
+<div class="status-main">
 
-        <div id="statusLight" class="status-light"></div>
+<div id="statusLight" class="status-light"></div>
 
-        <div class="status-text">
+<div class="status-text">
 
-            <strong id="systemStatus">
-                SYSTEM OPERATIONAL
-            </strong>
+<strong id="systemStatus">
+SYSTEM OPERATIONAL
+</strong>
 
-            <span id="statusDescription">
-                All life-support parameters within safe limits
-            </span>
+<span id="statusDescription">
+All life-support parameters within safe limits
+</span>
 
-        </div>
+</div>
 
-    </div>
+</div>
 
-    <div class="system-id">
+<div class="system-id">
 
-        HABITAT: MARS-01<br>
-        AI CORE: ONLINE<br>
-        UPLINK: STABLE
+HABITAT: MARS-01<br>
+AI CORE: ONLINE<br>
+UPLINK: STABLE
 
-    </div>
+</div>
 
 </section>
 
 
 <div class="dashboard">
 
+
 <div>
+
 
 <section class="panel">
 
 <div class="panel-title">
 
-    <h2>LIVE TELEMETRY</h2>
+<h2>LIVE TELEMETRY</h2>
 
-    <span id="updateTime">
-        --:--:--
-    </span>
+<span id="updateTime">--:--:--</span>
 
 </div>
 
@@ -595,261 +664,184 @@ body.critical .live-dot {
 <div class="telemetry-grid">
 
 
-<!-- O2 -->
-
 <div id="sensor-o2" class="sensor">
 
-    <div class="sensor-name">
-        OXYGEN CONCENTRATION
-    </div>
+<div class="sensor-name">
+OXYGEN CONCENTRATION
+</div>
 
-    <div class="sensor-value">
-        <span id="o2Value">21.0</span>
-        <span class="sensor-unit">%</span>
-    </div>
+<div class="sensor-value">
+<span id="o2Value">21.0</span>
+<span class="sensor-unit">%</span>
+</div>
 
-    <div class="bar">
-        <div id="o2Bar" class="bar-fill"></div>
-    </div>
+<div class="bar">
+<div id="o2Bar" class="bar-fill"></div>
+</div>
 
-    <div class="sensor-footer">
+<div class="sensor-footer">
 
-        <div id="o2Status" class="sensor-status">
-            ● NORMAL
-        </div>
+<div id="o2Status" class="sensor-status">
+● NORMAL
+</div>
 
-        <div class="sensor-signal">
-            SENSOR-01
-        </div>
-
-    </div>
+<div class="sensor-signal">
+SENSOR-01
+</div>
 
 </div>
 
+</div>
 
-<!-- CO2 -->
 
 <div id="sensor-co2" class="sensor">
 
-    <div class="sensor-name">
-        CARBON DIOXIDE
-    </div>
+<div class="sensor-name">
+CARBON DIOXIDE
+</div>
 
-    <div class="sensor-value">
-        <span id="co2Value">0.40</span>
-        <span class="sensor-unit">%</span>
-    </div>
+<div class="sensor-value">
+<span id="co2Value">0.40</span>
+<span class="sensor-unit">%</span>
+</div>
 
-    <div class="bar">
-        <div id="co2Bar" class="bar-fill"></div>
-    </div>
+<div class="bar">
+<div id="co2Bar" class="bar-fill"></div>
+</div>
 
-    <div class="sensor-footer">
+<div class="sensor-footer">
 
-        <div id="co2Status" class="sensor-status">
-            ● NORMAL
-        </div>
+<div id="co2Status" class="sensor-status">
+● NORMAL
+</div>
 
-        <div class="sensor-signal">
-            SENSOR-02
-        </div>
-
-    </div>
+<div class="sensor-signal">
+SENSOR-02
+</div>
 
 </div>
 
+</div>
 
-<!-- PRESSURE -->
 
 <div id="sensor-pressure" class="sensor">
 
-    <div class="sensor-name">
-        HABITAT PRESSURE
-    </div>
+<div class="sensor-name">
+HABITAT PRESSURE
+</div>
 
-    <div class="sensor-value">
-        <span id="pressureValue">100</span>
-        <span class="sensor-unit">kPa</span>
-    </div>
+<div class="sensor-value">
+<span id="pressureValue">100</span>
+<span class="sensor-unit">kPa</span>
+</div>
 
-    <div class="bar">
-        <div id="pressureBar" class="bar-fill"></div>
-    </div>
+<div class="bar">
+<div id="pressureBar" class="bar-fill"></div>
+</div>
 
-    <div class="sensor-footer">
+<div class="sensor-footer">
 
-        <div id="pressureStatus" class="sensor-status">
-            ● NORMAL
-        </div>
+<div id="pressureStatus" class="sensor-status">
+● NORMAL
+</div>
 
-        <div class="sensor-signal">
-            SENSOR-03
-        </div>
-
-    </div>
+<div class="sensor-signal">
+SENSOR-03
+</div>
 
 </div>
 
+</div>
 
-<!-- TEMPERATURE -->
 
 <div id="sensor-temperature" class="sensor">
 
-    <div class="sensor-name">
-        INTERNAL TEMPERATURE
-    </div>
+<div class="sensor-name">
+INTERNAL TEMPERATURE
+</div>
 
-    <div class="sensor-value">
-        <span id="temperatureValue">22.0</span>
-        <span class="sensor-unit">°C</span>
-    </div>
+<div class="sensor-value">
+<span id="temperatureValue">22.0</span>
+<span class="sensor-unit">°C</span>
+</div>
 
-    <div class="bar">
-        <div id="temperatureBar" class="bar-fill"></div>
-    </div>
+<div class="bar">
+<div id="temperatureBar" class="bar-fill"></div>
+</div>
 
-    <div class="sensor-footer">
+<div class="sensor-footer">
 
-        <div id="temperatureStatus" class="sensor-status">
-            ● NORMAL
-        </div>
+<div id="temperatureStatus" class="sensor-status">
+● NORMAL
+</div>
 
-        <div class="sensor-signal">
-            SENSOR-04
-        </div>
-
-    </div>
+<div class="sensor-signal">
+SENSOR-04
+</div>
 
 </div>
 
+</div>
 
-<!-- HUMIDITY -->
 
 <div id="sensor-humidity" class="sensor">
 
-    <div class="sensor-name">
-        HUMIDITY
-    </div>
+<div class="sensor-name">
+HUMIDITY
+</div>
 
-    <div class="sensor-value">
-        <span id="humidityValue">50</span>
-        <span class="sensor-unit">%</span>
-    </div>
+<div class="sensor-value">
+<span id="humidityValue">50</span>
+<span class="sensor-unit">%</span>
+</div>
 
-    <div class="bar">
-        <div id="humidityBar" class="bar-fill"></div>
-    </div>
+<div class="bar">
+<div id="humidityBar" class="bar-fill"></div>
+</div>
 
-    <div class="sensor-footer">
+<div class="sensor-footer">
 
-        <div id="humidityStatus" class="sensor-status">
-            ● NORMAL
-        </div>
+<div id="humidityStatus" class="sensor-status">
+● NORMAL
+</div>
 
-        <div class="sensor-signal">
-            SENSOR-05
-        </div>
-
-    </div>
+<div class="sensor-signal">
+SENSOR-05
+</div>
 
 </div>
 
+</div>
 
-<!-- WATER -->
 
 <div id="sensor-water" class="sensor">
 
-    <div class="sensor-name">
-        WATER RESERVE
-    </div>
+<div class="sensor-name">
+WATER RESERVE
+</div>
 
-    <div class="sensor-value">
-        <span id="waterValue">82</span>
-        <span class="sensor-unit">%</span>
-    </div>
+<div class="sensor-value">
+<span id="waterValue">82</span>
+<span class="sensor-unit">%</span>
+</div>
 
-    <div class="bar">
-        <div id="waterBar" class="bar-fill"></div>
-    </div>
+<div class="bar">
+<div id="waterBar" class="bar-fill"></div>
+</div>
 
-    <div class="sensor-footer">
+<div class="sensor-footer">
 
-        <div id="waterStatus" class="sensor-status">
-            ● NORMAL
-        </div>
+<div id="waterStatus" class="sensor-status">
+● NORMAL
+</div>
 
-        <div class="sensor-signal">
-            SENSOR-06
-        </div>
-
-    </div>
+<div class="sensor-signal">
+SENSOR-06
+</div>
 
 </div>
 
-
-<!-- SOLAR PANEL POSITION -->
-
-<div id="sensor-solar" class="sensor">
-
-    <div class="sensor-name">
-        SOLAR PANEL POSITION
-    </div>
-
-    <div class="sensor-value">
-        <span id="solarAngleValue">45</span>
-        <span class="sensor-unit">°</span>
-    </div>
-
-    <div class="bar">
-        <div id="solarBar" class="bar-fill"></div>
-    </div>
-
-    <div class="sensor-footer">
-
-        <div id="solarStatus" class="sensor-status">
-            ● OPTIMAL
-        </div>
-
-        <div class="sensor-signal">
-            SENSOR-07
-        </div>
-
-    </div>
-
 </div>
-
-
-<!-- SOLAR POWER -->
-
-<div id="sensor-power" class="sensor">
-
-    <div class="sensor-name">
-        SOLAR POWER OUTPUT
-    </div>
-
-    <div class="sensor-value">
-        <span id="solarPowerValue">4.5</span>
-        <span class="sensor-unit">kW</span>
-    </div>
-
-    <div class="bar">
-        <div id="powerBar" class="bar-fill"></div>
-    </div>
-
-    <div class="sensor-footer">
-
-        <div id="powerStatus" class="sensor-status">
-            ● NORMAL
-        </div>
-
-        <div class="sensor-signal">
-            SENSOR-08
-        </div>
-
-    </div>
-
-</div>
-
 
 </div>
 
@@ -860,9 +852,9 @@ body.critical .live-dot {
 
 <div class="panel-title">
 
-    <h2>TELEMETRY HISTORY</h2>
+<h2>TELEMETRY HISTORY</h2>
 
-    <span>LAST 30 READINGS</span>
+<span>LAST 30 READINGS</span>
 
 </div>
 
@@ -873,8 +865,6 @@ body.critical .live-dot {
 </div>
 
 
-<!-- RIGHT SIDE -->
-
 <div>
 
 
@@ -882,60 +872,193 @@ body.critical .live-dot {
 
 <div class="panel-title">
 
-    <h2>AI DECISION ENGINE</h2>
+<h2>AI DECISION ENGINE</h2>
 
-    <span>MF-AI CORE</span>
+<span>MF-AI CORE</span>
 
 </div>
 
 
 <div class="ai-header">
 
-    <div class="ai-icon">
-        AI
-    </div>
+<div class="ai-icon">
+AI
+</div>
 
-    <div>
+<div>
 
-        <strong id="aiState">
-            MONITORING
-        </strong>
+<strong id="aiState">
+MONITORING
+</strong>
 
-        <span>
-            Autonomous analysis active
-        </span>
+<span>
+Autonomous analysis active
+</span>
 
-    </div>
+</div>
 
 </div>
 
 
 <div id="aiMessage" class="ai-message">
 
-    Receiving telemetry from life-support
-    subsystems.<br><br>
+Receiving telemetry from life-support
+subsystems.<br><br>
 
-    No abnormal conditions detected.
+No abnormal conditions detected.
 
 </div>
 
 
 <div id="aiAction" class="ai-action">
 
-    ACTION: Continuous monitoring
+ACTION: Continuous autonomous monitoring
 
 </div>
 
 </section>
 
 
+<!-- FAILURE PREDICTION -->
+
+<section class="panel prediction">
+
+<div class="panel-title">
+
+<h2>FAILURE PREDICTION</h2>
+
+<span>AI PREDICTIVE MODEL</span>
+
+</div>
+
+
+<div class="prediction-box">
+
+<div class="prediction-main">
+
+<div class="prediction-label">
+ESTIMATED FAILURE RISK
+</div>
+
+<div id="riskValue" class="prediction-value">
+4%
+</div>
+
+</div>
+
+
+<div class="risk-bar">
+
+<div id="riskFill" class="risk-fill"></div>
+
+</div>
+
+
+<div id="predictionText" class="prediction-description">
+
+Current telemetry shows stable parameters.
+No significant failure trend detected.
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- COST -->
+
+<section class="panel cost-panel">
+
+<div class="panel-title">
+
+<h2>RESOURCE & COST ANALYSIS</h2>
+
+<span>SIMULATION</span>
+
+</div>
+
+
+<div class="cost-grid">
+
+<div class="cost-card">
+
+<div class="cost-label">
+EMERGENCY MISSION
+</div>
+
+<div class="cost-value">
+$1.2B
+</div>
+
+</div>
+
+
+<div class="cost-card">
+
+<div class="cost-label">
+CREW TRANSPORT
+</div>
+
+<div class="cost-value">
+$800M
+</div>
+
+</div>
+
+
+<div class="cost-card">
+
+<div class="cost-label">
+EMERGENCY REPAIR
+</div>
+
+<div id="repairCost" class="cost-value">
+$15M
+</div>
+
+</div>
+
+
+<div class="cost-card">
+
+<div class="cost-label">
+SYSTEM MONITORING
+</div>
+
+<div class="cost-value">
+$0.2M
+</div>
+
+</div>
+
+</div>
+
+
+<div class="savings">
+
+<div class="savings-label">
+ESTIMATED COST AVOIDED BY EARLY DETECTION
+</div>
+
+<div id="savingsValue" class="savings-value">
+$0
+</div>
+
+</div>
+
+</section>
+
+
+<!-- EVENT LOG -->
+
 <section class="panel" style="margin-top:18px">
 
 <div class="panel-title">
 
-    <h2>SYSTEM EVENT LOG</h2>
+<h2>SYSTEM EVENT LOG</h2>
 
-    <span>LIVE</span>
+<span>LIVE</span>
 
 </div>
 
@@ -946,17 +1069,13 @@ body.critical .live-dot {
 
 <div class="controls">
 
-    <button onclick="simulateEmergency()" class="emergency">
-        SIMULATE EMERGENCY
-    </button>
+<button onclick="simulateEmergency()" class="emergency">
+SIMULATE EMERGENCY
+</button>
 
-    <button onclick="resetSystem()">
-        RESET SYSTEM
-    </button>
-
-    <button onclick="enableAudio()" class="audio">
-        ENABLE ALERT SOUND
-    </button>
+<button onclick="resetSystem()">
+RESET SYSTEM
+</button>
 
 </div>
 
@@ -967,13 +1086,13 @@ body.critical .live-dot {
 
 <div class="footer">
 
-    <span>
-        MARSFORM // AUTONOMOUS HABITAT SYSTEM
-    </span>
+<span>
+MARSFORM // AUTONOMOUS HABITAT SYSTEM
+</span>
 
-    <span>
-        TELEMETRY SIMULATION MODE
-    </span>
+<span>
+TELEMETRY SIMULATION MODE
+</span>
 
 </div>
 
@@ -982,25 +1101,30 @@ body.critical .live-dot {
 
 <script>
 
+
 /*
 ====================================================
 MARSFORM TELEMETRY SIMULATION
 ====================================================
 
-В демонстрационной версии реальные датчики заменены
-программным генератором телеметрии.
+В демонстрационной версии реальные физические
+датчики заменены программным генератором телеметрии.
 
-В реальной системе данные поступают от физических
-датчиков марсианской базы.
+В реальной системе данные поступают от датчиков
+системы жизнеобеспечения марсианской базы.
 
-Физическая модель включает:
-- атмосферные параметры;
-- давление;
-- температуру;
-- влажность;
-- запас воды;
-- положение солнечной панели;
-- солнечную генерацию энергии.
+AI анализирует:
+- кислород
+- CO2
+- давление
+- температуру
+- влажность
+- запас воды
+
+Также система моделирует:
+- прогнозирование неисправностей
+- оценку риска
+- потенциально предотвращённые расходы
 ====================================================
 */
 
@@ -1012,10 +1136,7 @@ let telemetry = {
     pressure: 100,
     temperature: 22,
     humidity: 50,
-    water: 82,
-
-    solarAngle: 45,
-    solarPower: 4.5
+    water: 82
 
 };
 
@@ -1024,35 +1145,33 @@ let emergencyMode = false;
 
 let graphData = [];
 
-let alarmActive = false;
+let failureHistory = [];
 
-let alarmTimer = null;
-
-let audioContext = null;
+let estimatedSavings = 0;
 
 
-/* ==================================================
-   SMOOTH SENSOR MOVEMENT
-================================================== */
+/* -------------------------------------------------
+   RANDOM DRIFT
+------------------------------------------------- */
 
 function drift(value, min, max, speed) {
 
     let change =
         (Math.random() - 0.5) * speed;
 
-    let result =
-        value + change;
+    let result = value + change;
 
     return Math.max(
         min,
         Math.min(max, result)
     );
+
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    TELEMETRY UPDATE
-================================================== */
+------------------------------------------------- */
 
 function updateTelemetry() {
 
@@ -1066,7 +1185,6 @@ function updateTelemetry() {
                 0.12
             );
 
-
         telemetry.co2 =
             drift(
                 telemetry.co2,
@@ -1074,7 +1192,6 @@ function updateTelemetry() {
                 0.48,
                 0.025
             );
-
 
         telemetry.pressure =
             drift(
@@ -1084,7 +1201,6 @@ function updateTelemetry() {
                 0.7
             );
 
-
         telemetry.temperature =
             drift(
                 telemetry.temperature,
@@ -1092,7 +1208,6 @@ function updateTelemetry() {
                 24,
                 0.35
             );
-
 
         telemetry.humidity =
             drift(
@@ -1102,7 +1217,6 @@ function updateTelemetry() {
                 1
             );
 
-
         telemetry.water =
             drift(
                 telemetry.water,
@@ -1111,53 +1225,14 @@ function updateTelemetry() {
                 0.08
             );
 
-
-        /*
-        Солнечная панель автоматически меняет
-        положение относительно условного Солнца.
-        */
-
-        telemetry.solarAngle =
-            drift(
-                telemetry.solarAngle,
-                15,
-                75,
-                2
-            );
-
-
-        /*
-        Эффективность зависит от отклонения
-        от оптимального угла 45°.
-        */
-
-        let angleDifference =
-            Math.abs(
-                telemetry.solarAngle - 45
-            );
-
-
-        let efficiency =
-            Math.max(
-                0.35,
-                1 - angleDifference / 60
-            );
-
-
-        /*
-        Максимальная мощность демонстрационной
-        панели = 5 kW.
-        */
-
-        telemetry.solarPower =
-            5 * efficiency;
-
     }
 
 
     renderTelemetry();
 
     analyseSystem();
+
+    predictFailure();
 
     updateClock();
 
@@ -1166,109 +1241,61 @@ function updateTelemetry() {
 }
 
 
-/* ==================================================
-   RENDER TELEMETRY
-================================================== */
+/* -------------------------------------------------
+   RENDER
+------------------------------------------------- */
 
 function renderTelemetry() {
 
     document.getElementById("o2Value").textContent =
         telemetry.o2.toFixed(1);
 
-
     document.getElementById("co2Value").textContent =
         telemetry.co2.toFixed(2);
-
 
     document.getElementById("pressureValue").textContent =
         telemetry.pressure.toFixed(1);
 
-
     document.getElementById("temperatureValue").textContent =
         telemetry.temperature.toFixed(1);
 
-
     document.getElementById("humidityValue").textContent =
         Math.round(telemetry.humidity);
-
 
     document.getElementById("waterValue").textContent =
         Math.round(telemetry.water);
 
 
-    document.getElementById("solarAngleValue").textContent =
-        Math.round(telemetry.solarAngle);
-
-
-    document.getElementById("solarPowerValue").textContent =
-        telemetry.solarPower.toFixed(2);
-
-
-    /* BARS */
-
     document.getElementById("o2Bar").style.width =
         (telemetry.o2 / 25 * 100) + "%";
 
-
     document.getElementById("co2Bar").style.width =
-        Math.min(
-            100,
-            telemetry.co2 / 1 * 100
-        ) + "%";
-
+        Math.min(100, telemetry.co2 / 1 * 100) + "%";
 
     document.getElementById("pressureBar").style.width =
         (telemetry.pressure / 120 * 100) + "%";
 
-
     document.getElementById("temperatureBar").style.width =
         ((telemetry.temperature + 10) / 50 * 100) + "%";
-
 
     document.getElementById("humidityBar").style.width =
         telemetry.humidity + "%";
 
-
     document.getElementById("waterBar").style.width =
         telemetry.water + "%";
-
-
-    /*
-    Чем ближе угол к 45°, тем эффективнее панель.
-    */
-
-    let solarEfficiency =
-        Math.max(
-            0,
-            100 -
-            Math.abs(
-                telemetry.solarAngle - 45
-            ) * 1.6
-        );
-
-
-    document.getElementById("solarBar").style.width =
-        solarEfficiency + "%";
-
-
-    document.getElementById("powerBar").style.width =
-        (telemetry.solarPower / 5 * 100) + "%";
 
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    SYSTEM ANALYSIS
-================================================== */
+------------------------------------------------- */
 
 function analyseSystem() {
 
     let critical = 0;
-
     let warnings = 0;
 
-
-    /* O2 */
 
     if (
         telemetry.o2 < 19.5 ||
@@ -1293,8 +1320,6 @@ function analyseSystem() {
 
     }
 
-
-    /* CO2 */
 
     if (telemetry.co2 > 0.8) {
 
@@ -1326,8 +1351,6 @@ function analyseSystem() {
 
     }
 
-
-    /* PRESSURE */
 
     if (
         telemetry.pressure < 90 ||
@@ -1366,8 +1389,6 @@ function analyseSystem() {
     }
 
 
-    /* TEMPERATURE */
-
     if (
         telemetry.temperature < 15 ||
         telemetry.temperature > 28
@@ -1404,8 +1425,6 @@ function analyseSystem() {
 
     }
 
-
-    /* HUMIDITY */
 
     if (
         telemetry.humidity < 20 ||
@@ -1444,8 +1463,6 @@ function analyseSystem() {
     }
 
 
-    /* WATER */
-
     if (telemetry.water < 25) {
 
         critical++;
@@ -1477,67 +1494,6 @@ function analyseSystem() {
     }
 
 
-    /* SOLAR PANEL */
-
-    if (
-        telemetry.solarAngle >= 30 &&
-        telemetry.solarAngle <= 60
-    ) {
-
-        setSensor(
-            "sensor-solar",
-            "solarStatus",
-            "OPTIMAL"
-        );
-
-    } else {
-
-        warnings++;
-
-        setSensor(
-            "sensor-solar",
-            "solarStatus",
-            "WARNING"
-        );
-
-    }
-
-
-    /* SOLAR POWER */
-
-    if (telemetry.solarPower < 2) {
-
-        critical++;
-
-        setSensor(
-            "sensor-power",
-            "powerStatus",
-            "CRITICAL"
-        );
-
-    } else if (telemetry.solarPower < 3.5) {
-
-        warnings++;
-
-        setSensor(
-            "sensor-power",
-            "powerStatus",
-            "WARNING"
-        );
-
-    } else {
-
-        setSensor(
-            "sensor-power",
-            "powerStatus",
-            "NORMAL"
-        );
-
-    }
-
-
-    /* AI DECISION */
-
     if (critical >= 3) {
 
         activateCritical();
@@ -1559,15 +1515,11 @@ function analyseSystem() {
 }
 
 
-/* ==================================================
-   SENSOR STATUS
-================================================== */
+/* -------------------------------------------------
+   SENSOR
+------------------------------------------------- */
 
-function setSensor(
-    sensorId,
-    statusId,
-    state
-) {
+function setSensor(sensorId, statusId, state) {
 
     let sensor =
         document.getElementById(sensorId);
@@ -1582,24 +1534,17 @@ function setSensor(
     );
 
 
-    if (
-        state === "NORMAL" ||
-        state === "OPTIMAL"
-    ) {
+    if (state === "NORMAL") {
 
         status.textContent =
-            state === "OPTIMAL"
-            ? "● OPTIMAL"
-            : "● NORMAL";
+            "● NORMAL";
 
     }
 
 
     if (state === "WARNING") {
 
-        sensor.classList.add(
-            "warning"
-        );
+        sensor.classList.add("warning");
 
         status.textContent =
             "● WARNING";
@@ -1609,9 +1554,7 @@ function setSensor(
 
     if (state === "CRITICAL") {
 
-        sensor.classList.add(
-            "critical"
-        );
+        sensor.classList.add("critical");
 
         status.textContent =
             "● CRITICAL";
@@ -1621,39 +1564,30 @@ function setSensor(
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    NORMAL
-================================================== */
+------------------------------------------------- */
 
 function activateNormal() {
 
-    document.body.classList.remove(
-        "critical"
-    );
-
-    stopAlarm();
-
+    document.body.classList.remove("critical");
 
     document.getElementById("systemStatus")
         .textContent =
         "SYSTEM OPERATIONAL";
 
-
     document.getElementById("statusDescription")
         .textContent =
         "All life-support parameters within safe limits";
-
 
     document.getElementById("aiState")
         .textContent =
         "MONITORING";
 
-
     document.getElementById("aiMessage")
         .innerHTML =
         "Receiving telemetry from life-support subsystems.<br><br>" +
-        "Atmosphere, thermal control, water reserves and solar energy are stable.";
-
+        "No abnormal conditions detected.";
 
     document.getElementById("aiAction")
         .textContent =
@@ -1662,90 +1596,58 @@ function activateNormal() {
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    WARNING
-================================================== */
+------------------------------------------------- */
 
 function activateWarning(count) {
 
-    document.body.classList.remove(
-        "critical"
-    );
-
-    stopAlarm();
-
+    document.body.classList.remove("critical");
 
     document.getElementById("systemStatus")
         .textContent =
         "SYSTEM WARNING";
-
 
     document.getElementById("statusDescription")
         .textContent =
         count +
         " parameter(s) require AI attention";
 
-
     document.getElementById("aiState")
         .textContent =
         "ANALYSING";
-
 
     document.getElementById("aiMessage")
         .innerHTML =
         "AI detected an abnormal telemetry pattern.<br><br>" +
         "Predictive analysis is being performed to prevent escalation.";
 
-
     document.getElementById("aiAction")
         .textContent =
-        "ACTION: Optimising life-support and energy systems";
+        "ACTION: Adjusting life-support parameters";
 
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    CRITICAL
-================================================== */
+------------------------------------------------- */
 
 function activateCritical() {
 
-    document.body.classList.add(
-        "critical"
-    );
-
-
-    /*
-    Запускаем тревогу только при переходе
-    в критическое состояние.
-    */
-
-    if (!alarmActive) {
-
-        startAlarm();
-
-        addLog(
-            "AI EMERGENCY PROTOCOL ACTIVATED",
-            true
-        );
-
-    }
-
+    document.body.classList.add("critical");
 
     document.getElementById("systemStatus")
         .textContent =
         "CRITICAL SYSTEM ALERT";
 
-
     document.getElementById("statusDescription")
         .textContent =
         "Multiple life-support parameters outside safe limits";
 
-
     document.getElementById("aiState")
         .textContent =
         "EMERGENCY RESPONSE";
-
 
     document.getElementById("aiMessage")
         .innerHTML =
@@ -1754,7 +1656,6 @@ function activateCritical() {
         "</strong><br><br>" +
         "The autonomous controller has initiated emergency protocols.";
 
-
     document.getElementById("aiAction")
         .textContent =
         "ACTION: Isolating affected systems • Protecting habitat";
@@ -1762,202 +1663,247 @@ function activateCritical() {
 }
 
 
-/* ==================================================
-   AUDIO SYSTEM
-================================================== */
+/* -------------------------------------------------
+   FAILURE PREDICTION
+------------------------------------------------- */
 
-function createAudioContext() {
+function predictFailure() {
 
-    if (!audioContext) {
+    let risk = 0;
 
-        audioContext =
-            new (
-                window.AudioContext ||
-                window.webkitAudioContext
-            )();
+    let reason = [];
+
+
+    /*
+    Чем сильнее параметр отклоняется
+    от безопасной зоны, тем выше риск.
+    */
+
+
+    // OXYGEN
+
+    if (telemetry.o2 < 20) {
+
+        risk += 25;
+
+        reason.push("oxygen instability");
 
     }
 
-}
+
+    // CO2
+
+    if (telemetry.co2 > 0.5) {
+
+        risk += 20;
+
+        reason.push("CO₂ increase");
+
+    }
 
 
-/*
-Разрешение браузера на звук.
-Нажимается один раз перед демонстрацией.
-*/
+    if (telemetry.co2 > 0.8) {
 
-function enableAudio() {
+        risk += 25;
 
-    createAudioContext();
+    }
+
+
+    // PRESSURE
+
+    if (telemetry.pressure < 95) {
+
+        risk += 20;
+
+        reason.push("pressure decrease");
+
+    }
+
+
+    if (telemetry.pressure < 90) {
+
+        risk += 25;
+
+    }
+
+
+    // TEMPERATURE
 
     if (
-        audioContext.state === "suspended"
+        telemetry.temperature < 18 ||
+        telemetry.temperature > 27
     ) {
 
-        audioContext.resume();
+        risk += 15;
+
+        reason.push("temperature deviation");
+
+    }
+
+
+    // HUMIDITY
+
+    if (
+        telemetry.humidity < 25 ||
+        telemetry.humidity > 70
+    ) {
+
+        risk += 10;
+
+        reason.push("humidity deviation");
+
+    }
+
+
+    // WATER
+
+    if (telemetry.water < 40) {
+
+        risk += 20;
+
+        reason.push("low water reserve");
+
+    }
+
+
+    risk =
+        Math.min(99, risk);
+
+
+    document.getElementById("riskValue")
+        .textContent =
+        risk + "%";
+
+
+    document.getElementById("riskFill")
+        .style.width =
+        risk + "%";
+
+
+    /*
+    Оценка предотвращённых затрат.
+
+    Для демонстрации проекта используется
+    условная модель стоимости.
+    */
+
+    let potentialCost =
+        1200000000 +
+        800000000 +
+        15000000;
+
+
+    let preventionFactor =
+        risk / 100;
+
+
+    let currentSavings =
+        potentialCost *
+        preventionFactor *
+        0.15;
+
+
+    if (risk > 30) {
+
+        estimatedSavings +=
+            currentSavings * 0.001;
+
+    }
+
+
+    estimatedSavings =
+        Math.min(
+            estimatedSavings,
+            2000000000
+        );
+
+
+    document.getElementById("savingsValue")
+        .textContent =
+        "$" +
+        Math.round(
+            estimatedSavings
+        ).toLocaleString();
+
+
+    /*
+    Текст прогноза
+    */
+
+    if (risk < 15) {
+
+        document.getElementById("predictionText")
+            .textContent =
+            "Current telemetry is stable. AI predicts low probability of near-term system failure.";
+
+    } else if (risk < 40) {
+
+        document.getElementById("predictionText")
+            .textContent =
+            "Early deviation detected. Preventive maintenance is recommended.";
+
+    } else if (risk < 70) {
+
+        document.getElementById("predictionText")
+            .textContent =
+            "Elevated failure probability. AI recommends immediate inspection of affected subsystem.";
+
+    } else {
+
+        document.getElementById("predictionText")
+            .textContent =
+            "HIGH FAILURE RISK. Autonomous emergency protocols should be prepared.";
 
     }
 
 
     /*
-    Короткий тестовый звук.
+    Цвет риска
     */
 
-    let oscillator =
-        audioContext.createOscillator();
+    let value =
+        document.getElementById("riskValue");
 
-    let gain =
-        audioContext.createGain();
-
-
-    oscillator.type =
-        "sine";
-
-    oscillator.frequency.value =
-        650;
-
-    gain.gain.value =
-        0.04;
+    let fill =
+        document.getElementById("riskFill");
 
 
-    oscillator.connect(gain);
+    if (risk < 30) {
 
-    gain.connect(
-        audioContext.destination
-    );
+        value.style.color =
+            "var(--green)";
 
+        fill.style.background =
+            "var(--green)";
 
-    oscillator.start();
+    } else if (risk < 60) {
 
+        value.style.color =
+            "var(--yellow)";
 
-    oscillator.stop(
-        audioContext.currentTime + 0.15
-    );
+        fill.style.background =
+            "var(--yellow)";
 
+    } else {
 
-    addLog(
-        "ALERT AUDIO CHANNEL ENABLED"
-    );
+        value.style.color =
+            "var(--red)";
 
-}
-
-
-/*
-Основной аварийный сигнал.
-*/
-
-function startAlarm() {
-
-    if (alarmActive) {
-        return;
-    }
-
-
-    createAudioContext();
-
-
-    if (
-        audioContext.state === "suspended"
-    ) {
-
-        audioContext.resume();
-
-    }
-
-
-    alarmActive = true;
-
-
-    function beep() {
-
-        if (!alarmActive) {
-            return;
-        }
-
-
-        let oscillator =
-            audioContext.createOscillator();
-
-        let gain =
-            audioContext.createGain();
-
-
-        oscillator.type =
-            "square";
-
-
-        oscillator.frequency.setValueAtTime(
-            900,
-            audioContext.currentTime
-        );
-
-
-        gain.gain.setValueAtTime(
-            0.07,
-            audioContext.currentTime
-        );
-
-
-        oscillator.connect(gain);
-
-        gain.connect(
-            audioContext.destination
-        );
-
-
-        oscillator.start();
-
-
-        oscillator.stop(
-            audioContext.currentTime + 0.25
-        );
-
-    }
-
-
-    beep();
-
-
-    alarmTimer =
-        setInterval(
-            beep,
-            650
-        );
-
-}
-
-
-/*
-Остановка тревоги.
-*/
-
-function stopAlarm() {
-
-    alarmActive = false;
-
-
-    if (alarmTimer) {
-
-        clearInterval(
-            alarmTimer
-        );
-
-        alarmTimer = null;
+        fill.style.background =
+            "var(--red)";
 
     }
 
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    CLOCK
-================================================== */
+------------------------------------------------- */
 
 function updateClock() {
 
-    let now =
-        new Date();
-
+    let now = new Date();
 
     document.getElementById("updateTime")
         .textContent =
@@ -1966,9 +1912,9 @@ function updateClock() {
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    GRAPH
-================================================== */
+------------------------------------------------- */
 
 function updateGraph() {
 
@@ -1981,12 +1927,8 @@ function updateGraph() {
     );
 
 
-    if (
-        graphData.length > 30
-    ) {
-
+    if (graphData.length > 30) {
         graphData.shift();
-
     }
 
 
@@ -2000,67 +1942,48 @@ function updateGraph() {
         Math.max(...graphData);
 
 
-    graphData.forEach(
-        value => {
+    graphData.forEach(value => {
 
-            let bar =
-                document.createElement(
-                    "div"
-                );
+        let bar =
+            document.createElement("div");
 
-
-            bar.className =
-                "graph-bar";
+        bar.className =
+            "graph-bar";
 
 
-            let height =
-                (
-                    (value - min) /
-                    ((max - min) || 1)
-                ) * 100;
+        let height =
+            ((value - min) /
+            ((max - min) || 1)) *
+            100;
 
 
-            bar.style.height =
-                Math.max(
-                    10,
-                    height
-                ) + "%";
+        bar.style.height =
+            Math.max(10, height) + "%";
 
 
-            graph.appendChild(
-                bar
-            );
+        graph.appendChild(bar);
 
-        }
-    );
+    });
 
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    EVENT LOG
-================================================== */
+------------------------------------------------- */
 
-function addLog(
-    message,
-    alert = false
-) {
+function addLog(message, alert = false) {
 
     let log =
-        document.getElementById(
-            "log"
-        );
+        document.getElementById("log");
 
 
     let time =
-        new Date()
-        .toLocaleTimeString();
+        new Date().toLocaleTimeString();
 
 
     let entry =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     entry.className =
@@ -2069,27 +1992,16 @@ function addLog(
 
     entry.innerHTML =
 
-        `<div class="log-time">
-            ${time}
-        </div>
-
-        <div class="${alert
-            ? "log-alert"
-            : "log-info"}">
-
-            ${message}
-
-        </div>`;
+        `<div class="log-time">${time}</div>
+         <div class="${alert ? "log-alert" : "log-info"}">
+         ${message}
+         </div>`;
 
 
-    log.prepend(
-        entry
-    );
+    log.prepend(entry);
 
 
-    if (
-        log.children.length > 7
-    ) {
+    if (log.children.length > 7) {
 
         log.removeChild(
             log.lastChild
@@ -2100,45 +2012,21 @@ function addLog(
 }
 
 
-/* ==================================================
-   EMERGENCY SIMULATION
-================================================== */
+/* -------------------------------------------------
+   EMERGENCY
+------------------------------------------------- */
 
 function simulateEmergency() {
-
-    /*
-    Нажатие кнопки является пользовательским
-    действием, поэтому браузер разрешает звук.
-    */
-
-    createAudioContext();
-
-    audioContext.resume();
-
 
     emergencyMode = true;
 
 
-    /*
-    Создаём одновременно несколько
-    физических аномалий.
-    */
-
     telemetry.o2 = 17.2;
-
     telemetry.co2 = 1.2;
-
     telemetry.pressure = 84;
-
     telemetry.temperature = 30;
-
-    telemetry.humidity = 82;
-
-    telemetry.water = 20;
-
-    telemetry.solarAngle = 78;
-
-    telemetry.solarPower = 1.6;
+    telemetry.humidity = 78;
+    telemetry.water = 22;
 
 
     addLog(
@@ -2152,15 +2040,15 @@ function simulateEmergency() {
 }
 
 
-/* ==================================================
+/* -------------------------------------------------
    RESET
-================================================== */
+------------------------------------------------- */
 
 function resetSystem() {
 
     emergencyMode = false;
 
-    stopAlarm();
+    estimatedSavings = 0;
 
 
     telemetry = {
@@ -2170,17 +2058,9 @@ function resetSystem() {
         pressure: 100,
         temperature: 22,
         humidity: 50,
-        water: 82,
-
-        solarAngle: 45,
-        solarPower: 4.5
+        water: 82
 
     };
-
-
-    document.body.classList.remove(
-        "critical"
-    );
 
 
     addLog(
@@ -2193,9 +2073,9 @@ function resetSystem() {
 }
 
 
-/* ==================================================
-   INITIALIZATION
-================================================== */
+/* -------------------------------------------------
+   START
+------------------------------------------------- */
 
 addLog(
     "MARSFORM AI CORE INITIALIZED"
@@ -2206,25 +2086,16 @@ addLog(
 );
 
 addLog(
-    "PHYSICAL SENSOR MODEL INITIALIZED"
+    "Predictive maintenance module initialized"
 );
 
 addLog(
-    "SOLAR TRACKING SYSTEM ONLINE"
-);
-
-addLog(
-    "LIFE-SUPPORT MONITORING STARTED"
+    "Life-support monitoring started"
 );
 
 
 updateTelemetry();
 
-
-/*
-Каждые 2 секунды система получает
-новую порцию виртуальной телеметрии.
-*/
 
 setInterval(
     updateTelemetry,
