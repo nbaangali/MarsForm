@@ -36,6 +36,12 @@ body {
     transition: 0.4s;
 }
 
+body.warning {
+    background:
+        radial-gradient(circle at 50% -20%, #351d08 0%, transparent 50%),
+        #080706;
+}
+
 body.critical {
     background:
         radial-gradient(circle at 50% -20%, #4b1115 0%, transparent 50%),
@@ -151,6 +157,52 @@ body.critical {
     color: var(--muted);
     font-size: 11px;
     line-height: 1.8;
+}
+
+/* WARNING / CRITICAL BLINK */
+
+body.warning .system-status,
+body.critical .system-status {
+    animation: alertBlink 0.9s infinite;
+}
+
+body.warning .system-status {
+    border-color: var(--red);
+}
+
+body.critical .system-status {
+    border-color: var(--red);
+}
+
+body.warning .status-light,
+body.critical .status-light {
+    background: var(--red);
+    box-shadow: 0 0 20px var(--red);
+}
+
+body.warning .live,
+body.critical .live {
+    color: var(--red);
+}
+
+body.warning .live-dot,
+body.critical .live-dot {
+    background: var(--red);
+    box-shadow: 0 0 12px var(--red);
+}
+
+@keyframes alertBlink {
+
+    0%, 100% {
+        background: #26090d;
+        box-shadow: 0 0 10px #ff4d5a44;
+    }
+
+    50% {
+        background: #7a1018;
+        box-shadow: 0 0 35px #ff4d5a99;
+    }
+
 }
 
 /* DASHBOARD */
@@ -371,6 +423,26 @@ body.critical {
     line-height: 1.5;
 }
 
+.subsystem {
+    margin-top: 12px;
+    padding: 11px;
+    background: #0b141b;
+    border-left: 3px solid var(--cyan);
+}
+
+.subsystem-label {
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: 1.5px;
+}
+
+.subsystem-value {
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--cyan);
+}
+
 .risk-bar {
     height: 7px;
     background: #17232c;
@@ -526,26 +598,7 @@ button.emergency {
     color: #ff7a83;
 }
 
-/* CRITICAL */
-
-body.critical .system-status {
-    border-color: var(--red);
-    box-shadow: 0 0 30px #ff4d5a22;
-}
-
-body.critical .status-light {
-    background: var(--red);
-    box-shadow: 0 0 20px var(--red);
-}
-
-body.critical .live {
-    color: var(--red);
-}
-
-body.critical .live-dot {
-    background: var(--red);
-    box-shadow: 0 0 12px var(--red);
-}
+/* ANIMATION */
 
 @keyframes pulse {
     50% {
@@ -648,7 +701,6 @@ UPLINK: STABLE
 
 
 <div>
-
 
 <section class="panel">
 
@@ -867,7 +919,6 @@ SENSOR-06
 
 <div>
 
-
 <section class="panel ai-panel">
 
 <div class="panel-title">
@@ -950,6 +1001,19 @@ ESTIMATED FAILURE RISK
 <div class="risk-bar">
 
 <div id="riskFill" class="risk-fill"></div>
+
+</div>
+
+
+<div class="subsystem">
+
+<div class="subsystem-label">
+AFFECTED SUBSYSTEM
+</div>
+
+<div id="faultyComponent" class="subsystem-value">
+NO FAULT DETECTED
+</div>
 
 </div>
 
@@ -1101,7 +1165,6 @@ TELEMETRY SIMULATION MODE
 
 <script>
 
-
 /*
 ====================================================
 MARSFORM TELEMETRY SIMULATION
@@ -1145,9 +1208,9 @@ let emergencyMode = false;
 
 let graphData = [];
 
-let failureHistory = [];
-
 let estimatedSavings = 0;
+
+let previousSystemState = "NORMAL";
 
 
 /* -------------------------------------------------
@@ -1159,12 +1222,69 @@ function drift(value, min, max, speed) {
     let change =
         (Math.random() - 0.5) * speed;
 
-    let result = value + change;
+    let result =
+        value + change;
 
     return Math.max(
         min,
         Math.min(max, result)
     );
+
+}
+
+
+/* -------------------------------------------------
+   SOUND ALERT
+------------------------------------------------- */
+
+function alertSound() {
+
+    try {
+
+        const AudioContext =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        const audio =
+            new AudioContext();
+
+        const oscillator =
+            audio.createOscillator();
+
+        const gain =
+            audio.createGain();
+
+        oscillator.type = "square";
+
+        oscillator.frequency.value = 800;
+
+        gain.gain.setValueAtTime(
+            0.08,
+            audio.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audio.currentTime + 0.35
+        );
+
+        oscillator.connect(gain);
+
+        gain.connect(audio.destination);
+
+        oscillator.start();
+
+        oscillator.stop(
+            audio.currentTime + 0.35
+        );
+
+    } catch (error) {
+
+        console.log(
+            "Audio alert unavailable"
+        );
+
+    }
 
 }
 
@@ -1247,41 +1367,56 @@ function updateTelemetry() {
 
 function renderTelemetry() {
 
-    document.getElementById("o2Value").textContent =
+    document.getElementById("o2Value")
+        .textContent =
         telemetry.o2.toFixed(1);
 
-    document.getElementById("co2Value").textContent =
+    document.getElementById("co2Value")
+        .textContent =
         telemetry.co2.toFixed(2);
 
-    document.getElementById("pressureValue").textContent =
+    document.getElementById("pressureValue")
+        .textContent =
         telemetry.pressure.toFixed(1);
 
-    document.getElementById("temperatureValue").textContent =
+    document.getElementById("temperatureValue")
+        .textContent =
         telemetry.temperature.toFixed(1);
 
-    document.getElementById("humidityValue").textContent =
+    document.getElementById("humidityValue")
+        .textContent =
         Math.round(telemetry.humidity);
 
-    document.getElementById("waterValue").textContent =
+    document.getElementById("waterValue")
+        .textContent =
         Math.round(telemetry.water);
 
 
-    document.getElementById("o2Bar").style.width =
+    document.getElementById("o2Bar")
+        .style.width =
         (telemetry.o2 / 25 * 100) + "%";
 
-    document.getElementById("co2Bar").style.width =
-        Math.min(100, telemetry.co2 / 1 * 100) + "%";
+    document.getElementById("co2Bar")
+        .style.width =
+        Math.min(
+            100,
+            telemetry.co2 / 1 * 100
+        ) + "%";
 
-    document.getElementById("pressureBar").style.width =
+    document.getElementById("pressureBar")
+        .style.width =
         (telemetry.pressure / 120 * 100) + "%";
 
-    document.getElementById("temperatureBar").style.width =
+    document.getElementById("temperatureBar")
+        .style.width =
         ((telemetry.temperature + 10) / 50 * 100) + "%";
 
-    document.getElementById("humidityBar").style.width =
+    document.getElementById("humidityBar")
+        .style.width =
         telemetry.humidity + "%";
 
-    document.getElementById("waterBar").style.width =
+    document.getElementById("waterBar")
+        .style.width =
         telemetry.water + "%";
 
 }
@@ -1293,16 +1428,21 @@ function renderTelemetry() {
 
 function analyseSystem() {
 
-    let critical = 0;
-    let warnings = 0;
+    let critical = [];
 
+    let warnings = [];
+
+
+    /* OXYGEN */
 
     if (
         telemetry.o2 < 19.5 ||
         telemetry.o2 > 23.5
     ) {
 
-        critical++;
+        critical.push(
+            "Oxygen Control System"
+        );
 
         setSensor(
             "sensor-o2",
@@ -1321,9 +1461,13 @@ function analyseSystem() {
     }
 
 
+    /* CO2 */
+
     if (telemetry.co2 > 0.8) {
 
-        critical++;
+        critical.push(
+            "CO₂ Scrubbing System"
+        );
 
         setSensor(
             "sensor-co2",
@@ -1333,7 +1477,9 @@ function analyseSystem() {
 
     } else if (telemetry.co2 > 0.5) {
 
-        warnings++;
+        warnings.push(
+            "CO₂ Scrubbing System"
+        );
 
         setSensor(
             "sensor-co2",
@@ -1352,12 +1498,16 @@ function analyseSystem() {
     }
 
 
+    /* PRESSURE */
+
     if (
         telemetry.pressure < 90 ||
         telemetry.pressure > 110
     ) {
 
-        critical++;
+        critical.push(
+            "Habitat Pressure Control"
+        );
 
         setSensor(
             "sensor-pressure",
@@ -1370,7 +1520,9 @@ function analyseSystem() {
         telemetry.pressure > 105
     ) {
 
-        warnings++;
+        warnings.push(
+            "Habitat Pressure Control"
+        );
 
         setSensor(
             "sensor-pressure",
@@ -1389,12 +1541,16 @@ function analyseSystem() {
     }
 
 
+    /* TEMPERATURE */
+
     if (
         telemetry.temperature < 15 ||
         telemetry.temperature > 28
     ) {
 
-        critical++;
+        critical.push(
+            "Thermal Control System"
+        );
 
         setSensor(
             "sensor-temperature",
@@ -1407,7 +1563,9 @@ function analyseSystem() {
         telemetry.temperature > 27
     ) {
 
-        warnings++;
+        warnings.push(
+            "Thermal Control System"
+        );
 
         setSensor(
             "sensor-temperature",
@@ -1426,12 +1584,16 @@ function analyseSystem() {
     }
 
 
+    /* HUMIDITY */
+
     if (
         telemetry.humidity < 20 ||
         telemetry.humidity > 75
     ) {
 
-        critical++;
+        critical.push(
+            "Humidity Control System"
+        );
 
         setSensor(
             "sensor-humidity",
@@ -1444,7 +1606,9 @@ function analyseSystem() {
         telemetry.humidity > 70
     ) {
 
-        warnings++;
+        warnings.push(
+            "Humidity Control System"
+        );
 
         setSensor(
             "sensor-humidity",
@@ -1463,9 +1627,13 @@ function analyseSystem() {
     }
 
 
+    /* WATER */
+
     if (telemetry.water < 25) {
 
-        critical++;
+        critical.push(
+            "Water Recycling System"
+        );
 
         setSensor(
             "sensor-water",
@@ -1475,7 +1643,9 @@ function analyseSystem() {
 
     } else if (telemetry.water < 40) {
 
-        warnings++;
+        warnings.push(
+            "Water Recycling System"
+        );
 
         setSensor(
             "sensor-water",
@@ -1494,17 +1664,19 @@ function analyseSystem() {
     }
 
 
-    if (critical >= 3) {
+    /* SYSTEM STATE */
 
-        activateCritical();
+    if (critical.length > 0) {
 
-    } else if (critical > 0) {
+        activateCritical(
+            critical
+        );
 
-        activateWarning(critical);
+    } else if (warnings.length > 0) {
 
-    } else if (warnings > 0) {
-
-        activateWarning(warnings);
+        activateWarning(
+            warnings
+        );
 
     } else {
 
@@ -1519,13 +1691,21 @@ function analyseSystem() {
    SENSOR
 ------------------------------------------------- */
 
-function setSensor(sensorId, statusId, state) {
+function setSensor(
+    sensorId,
+    statusId,
+    state
+) {
 
     let sensor =
-        document.getElementById(sensorId);
+        document.getElementById(
+            sensorId
+        );
 
     let status =
-        document.getElementById(statusId);
+        document.getElementById(
+            statusId
+        );
 
 
     sensor.classList.remove(
@@ -1544,7 +1724,9 @@ function setSensor(sensorId, statusId, state) {
 
     if (state === "WARNING") {
 
-        sensor.classList.add("warning");
+        sensor.classList.add(
+            "warning"
+        );
 
         status.textContent =
             "● WARNING";
@@ -1554,7 +1736,9 @@ function setSensor(sensorId, statusId, state) {
 
     if (state === "CRITICAL") {
 
-        sensor.classList.add("critical");
+        sensor.classList.add(
+            "critical"
+        );
 
         status.textContent =
             "● CRITICAL";
@@ -1570,28 +1754,45 @@ function setSensor(sensorId, statusId, state) {
 
 function activateNormal() {
 
-    document.body.classList.remove("critical");
+    document.body.classList.remove(
+        "critical",
+        "warning"
+    );
 
-    document.getElementById("systemStatus")
-        .textContent =
+
+    document.getElementById(
+        "systemStatus"
+    ).textContent =
         "SYSTEM OPERATIONAL";
 
-    document.getElementById("statusDescription")
-        .textContent =
+
+    document.getElementById(
+        "statusDescription"
+    ).textContent =
         "All life-support parameters within safe limits";
 
-    document.getElementById("aiState")
-        .textContent =
+
+    document.getElementById(
+        "aiState"
+    ).textContent =
         "MONITORING";
 
-    document.getElementById("aiMessage")
-        .innerHTML =
+
+    document.getElementById(
+        "aiMessage"
+    ).innerHTML =
         "Receiving telemetry from life-support subsystems.<br><br>" +
         "No abnormal conditions detected.";
 
-    document.getElementById("aiAction")
-        .textContent =
+
+    document.getElementById(
+        "aiAction"
+    ).textContent =
         "ACTION: Continuous autonomous monitoring";
+
+
+    previousSystemState =
+        "NORMAL";
 
 }
 
@@ -1600,31 +1801,75 @@ function activateNormal() {
    WARNING
 ------------------------------------------------- */
 
-function activateWarning(count) {
+function activateWarning(
+    components
+) {
 
-    document.body.classList.remove("critical");
+    document.body.classList.remove(
+        "critical"
+    );
 
-    document.getElementById("systemStatus")
-        .textContent =
+    document.body.classList.add(
+        "warning"
+    );
+
+
+    let component =
+        components.join(", ");
+
+
+    document.getElementById(
+        "systemStatus"
+    ).textContent =
         "SYSTEM WARNING";
 
-    document.getElementById("statusDescription")
-        .textContent =
-        count +
-        " parameter(s) require AI attention";
 
-    document.getElementById("aiState")
-        .textContent =
+    document.getElementById(
+        "statusDescription"
+    ).textContent =
+        "Affected subsystem: " +
+        component;
+
+
+    document.getElementById(
+        "aiState"
+    ).textContent =
         "ANALYSING";
 
-    document.getElementById("aiMessage")
-        .innerHTML =
-        "AI detected an abnormal telemetry pattern.<br><br>" +
-        "Predictive analysis is being performed to prevent escalation.";
 
-    document.getElementById("aiAction")
-        .textContent =
-        "ACTION: Adjusting life-support parameters";
+    document.getElementById(
+        "aiMessage"
+    ).innerHTML =
+        "AI detected an abnormal telemetry pattern.<br><br>" +
+        "<strong style='color:#ffc857'>" +
+        "Affected: " +
+        component +
+        "</strong>";
+
+
+    document.getElementById(
+        "aiAction"
+    ).textContent =
+        "ACTION: Preventive adjustment and subsystem inspection";
+
+
+    if (
+        previousSystemState === "NORMAL"
+    ) {
+
+        alertSound();
+
+        addLog(
+            "WARNING: " +
+            component,
+            true
+        );
+
+    }
+
+
+    previousSystemState =
+        "WARNING";
 
 }
 
@@ -1633,32 +1878,77 @@ function activateWarning(count) {
    CRITICAL
 ------------------------------------------------- */
 
-function activateCritical() {
+function activateCritical(
+    components
+) {
 
-    document.body.classList.add("critical");
+    document.body.classList.remove(
+        "warning"
+    );
 
-    document.getElementById("systemStatus")
-        .textContent =
+    document.body.classList.add(
+        "critical"
+    );
+
+
+    let component =
+        components.join(", ");
+
+
+    document.getElementById(
+        "systemStatus"
+    ).textContent =
         "CRITICAL SYSTEM ALERT";
 
-    document.getElementById("statusDescription")
-        .textContent =
-        "Multiple life-support parameters outside safe limits";
 
-    document.getElementById("aiState")
-        .textContent =
+    document.getElementById(
+        "statusDescription"
+    ).textContent =
+        "Fault detected: " +
+        component;
+
+
+    document.getElementById(
+        "aiState"
+    ).textContent =
         "EMERGENCY RESPONSE";
 
-    document.getElementById("aiMessage")
-        .innerHTML =
-        "<strong style='color:#ff4d5a'>" +
-        "AI HAS DETECTED A MULTI-SYSTEM FAILURE." +
-        "</strong><br><br>" +
-        "The autonomous controller has initiated emergency protocols.";
 
-    document.getElementById("aiAction")
-        .textContent =
+    document.getElementById(
+        "aiMessage"
+    ).innerHTML =
+        "<strong style='color:#ff4d5a'>" +
+        "AI HAS DETECTED A SYSTEM FAILURE." +
+        "</strong><br><br>" +
+        "Affected subsystem:<br>" +
+        component +
+        "<br><br>" +
+        "Emergency protocols initiated.";
+
+
+    document.getElementById(
+        "aiAction"
+    ).textContent =
         "ACTION: Isolating affected systems • Protecting habitat";
+
+
+    if (
+        previousSystemState !== "CRITICAL"
+    ) {
+
+        alertSound();
+
+        addLog(
+            "CRITICAL FAILURE: " +
+            component,
+            true
+        );
+
+    }
+
+
+    previousSystemState =
+        "CRITICAL";
 
 }
 
@@ -1671,33 +1961,41 @@ function predictFailure() {
 
     let risk = 0;
 
-    let reason = [];
+    let reasons = [];
+
+    let faulty = [];
 
 
-    /*
-    Чем сильнее параметр отклоняется
-    от безопасной зоны, тем выше риск.
-    */
-
-
-    // OXYGEN
+    /* OXYGEN */
 
     if (telemetry.o2 < 20) {
 
         risk += 25;
 
-        reason.push("oxygen instability");
+        reasons.push(
+            "oxygen instability"
+        );
+
+        faulty.push(
+            "Oxygen Control System"
+        );
 
     }
 
 
-    // CO2
+    /* CO2 */
 
     if (telemetry.co2 > 0.5) {
 
         risk += 20;
 
-        reason.push("CO₂ increase");
+        reasons.push(
+            "CO₂ increase"
+        );
+
+        faulty.push(
+            "CO₂ Scrubbing System"
+        );
 
     }
 
@@ -1709,13 +2007,19 @@ function predictFailure() {
     }
 
 
-    // PRESSURE
+    /* PRESSURE */
 
     if (telemetry.pressure < 95) {
 
         risk += 20;
 
-        reason.push("pressure decrease");
+        reasons.push(
+            "pressure decrease"
+        );
+
+        faulty.push(
+            "Habitat Pressure Control"
+        );
 
     }
 
@@ -1727,7 +2031,7 @@ function predictFailure() {
     }
 
 
-    // TEMPERATURE
+    /* TEMPERATURE */
 
     if (
         telemetry.temperature < 18 ||
@@ -1736,12 +2040,18 @@ function predictFailure() {
 
         risk += 15;
 
-        reason.push("temperature deviation");
+        reasons.push(
+            "temperature deviation"
+        );
+
+        faulty.push(
+            "Thermal Control System"
+        );
 
     }
 
 
-    // HUMIDITY
+    /* HUMIDITY */
 
     if (
         telemetry.humidity < 25 ||
@@ -1750,42 +2060,86 @@ function predictFailure() {
 
         risk += 10;
 
-        reason.push("humidity deviation");
+        reasons.push(
+            "humidity deviation"
+        );
+
+        faulty.push(
+            "Humidity Control System"
+        );
 
     }
 
 
-    // WATER
+    /* WATER */
 
     if (telemetry.water < 40) {
 
         risk += 20;
 
-        reason.push("low water reserve");
+        reasons.push(
+            "low water reserve"
+        );
+
+        faulty.push(
+            "Water Recycling System"
+        );
 
     }
 
 
     risk =
-        Math.min(99, risk);
+        Math.min(
+            99,
+            risk
+        );
 
 
-    document.getElementById("riskValue")
-        .textContent =
+    /* RISK */
+
+    document.getElementById(
+        "riskValue"
+    ).textContent =
         risk + "%";
 
 
-    document.getElementById("riskFill")
-        .style.width =
+    document.getElementById(
+        "riskFill"
+    ).style.width =
         risk + "%";
 
 
-    /*
-    Оценка предотвращённых затрат.
+    /* FAULTY COMPONENT */
 
-    Для демонстрации проекта используется
-    условная модель стоимости.
-    */
+    let faultyElement =
+        document.getElementById(
+            "faultyComponent"
+        );
+
+
+    if (faulty.length === 0) {
+
+        faultyElement.textContent =
+            "NO FAULT DETECTED";
+
+        faultyElement.style.color =
+            "var(--green)";
+
+        faultyElement.style.borderColor =
+            "var(--green)";
+
+    } else {
+
+        faultyElement.textContent =
+            faulty.join(" • ");
+
+        faultyElement.style.color =
+            "var(--red)";
+
+    }
+
+
+    /* COST */
 
     let potentialCost =
         1200000000 +
@@ -1818,54 +2172,59 @@ function predictFailure() {
         );
 
 
-    document.getElementById("savingsValue")
-        .textContent =
+    document.getElementById(
+        "savingsValue"
+    ).textContent =
         "$" +
         Math.round(
             estimatedSavings
         ).toLocaleString();
 
 
-    /*
-    Текст прогноза
-    */
+    /* PREDICTION TEXT */
 
     if (risk < 15) {
 
-        document.getElementById("predictionText")
-            .textContent =
+        document.getElementById(
+            "predictionText"
+        ).textContent =
             "Current telemetry is stable. AI predicts low probability of near-term system failure.";
 
     } else if (risk < 40) {
 
-        document.getElementById("predictionText")
-            .textContent =
+        document.getElementById(
+            "predictionText"
+        ).textContent =
             "Early deviation detected. Preventive maintenance is recommended.";
 
     } else if (risk < 70) {
 
-        document.getElementById("predictionText")
-            .textContent =
+        document.getElementById(
+            "predictionText"
+        ).textContent =
             "Elevated failure probability. AI recommends immediate inspection of affected subsystem.";
 
     } else {
 
-        document.getElementById("predictionText")
-            .textContent =
+        document.getElementById(
+            "predictionText"
+        ).textContent =
             "HIGH FAILURE RISK. Autonomous emergency protocols should be prepared.";
 
     }
 
 
-    /*
-    Цвет риска
-    */
+    /* RISK COLOR */
 
     let value =
-        document.getElementById("riskValue");
+        document.getElementById(
+            "riskValue"
+        );
 
     let fill =
-        document.getElementById("riskFill");
+        document.getElementById(
+            "riskFill"
+        );
 
 
     if (risk < 30) {
@@ -1903,10 +2262,13 @@ function predictFailure() {
 
 function updateClock() {
 
-    let now = new Date();
+    let now =
+        new Date();
 
-    document.getElementById("updateTime")
-        .textContent =
+
+    document.getElementById(
+        "updateTime"
+    ).textContent =
         now.toLocaleTimeString();
 
 }
@@ -1919,7 +2281,9 @@ function updateClock() {
 function updateGraph() {
 
     let graph =
-        document.getElementById("graph");
+        document.getElementById(
+            "graph"
+        );
 
 
     graphData.push(
@@ -1927,8 +2291,12 @@ function updateGraph() {
     );
 
 
-    if (graphData.length > 30) {
+    if (
+        graphData.length > 30
+    ) {
+
         graphData.shift();
+
     }
 
 
@@ -1936,34 +2304,47 @@ function updateGraph() {
 
 
     let min =
-        Math.min(...graphData);
+        Math.min(
+            ...graphData
+        );
 
     let max =
-        Math.max(...graphData);
+        Math.max(
+            ...graphData
+        );
 
 
-    graphData.forEach(value => {
+    graphData.forEach(
+        value => {
 
-        let bar =
-            document.createElement("div");
+            let bar =
+                document.createElement(
+                    "div"
+                );
 
-        bar.className =
-            "graph-bar";
-
-
-        let height =
-            ((value - min) /
-            ((max - min) || 1)) *
-            100;
+            bar.className =
+                "graph-bar";
 
 
-        bar.style.height =
-            Math.max(10, height) + "%";
+            let height =
+                ((value - min) /
+                ((max - min) || 1)) *
+                100;
 
 
-        graph.appendChild(bar);
+            bar.style.height =
+                Math.max(
+                    10,
+                    height
+                ) + "%";
 
-    });
+
+            graph.appendChild(
+                bar
+            );
+
+        }
+    );
 
 }
 
@@ -1972,18 +2353,26 @@ function updateGraph() {
    EVENT LOG
 ------------------------------------------------- */
 
-function addLog(message, alert = false) {
+function addLog(
+    message,
+    alert = false
+) {
 
     let log =
-        document.getElementById("log");
+        document.getElementById(
+            "log"
+        );
 
 
     let time =
-        new Date().toLocaleTimeString();
+        new Date()
+        .toLocaleTimeString();
 
 
     let entry =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     entry.className =
@@ -1998,10 +2387,14 @@ function addLog(message, alert = false) {
          </div>`;
 
 
-    log.prepend(entry);
+    log.prepend(
+        entry
+    );
 
 
-    if (log.children.length > 7) {
+    if (
+        log.children.length > 7
+    ) {
 
         log.removeChild(
             log.lastChild
@@ -2050,6 +2443,9 @@ function resetSystem() {
 
     estimatedSavings = 0;
 
+    previousSystemState =
+        "NORMAL";
+
 
     telemetry = {
 
@@ -2093,13 +2489,34 @@ addLog(
     "Life-support monitoring started"
 );
 
+addLog(
+    "TELEMETRY UPDATE INTERVAL: 60 SECONDS"
+);
+
 
 updateTelemetry();
 
 
+/*
+====================================================
+REALISTIC DEMO INTERVAL
+
+Телеметрия изменяется один раз в минуту.
+Каждое обновление записывается в EVENT LOG.
+====================================================
+*/
+
 setInterval(
-    updateTelemetry,
-    2000
+    function() {
+
+        addLog(
+            "LAST UPDATED: Telemetry data refreshed"
+        );
+
+        updateTelemetry();
+
+    },
+    60000
 );
 
 </script>
