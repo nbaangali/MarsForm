@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MarsForm — AI Life Support Control</title>
+
+<style>
+*{box-sizing:border-box}
+:root{
+    --bg:#05080c;
+    --panel:#0b1118;
+    --panel2:#0e1720;
+    --border:#243541;
+    --text:#e8f1f5;
+    --muted:#718692;
+    --cyan:#39d5ff;
+    --green:#27e38a;
+    --yellow:#ffc857;
+    --red:#ff4d5a;
+}
+body{
+    margin:0;min-height:100vh;
+    background:radial-gradient(circle at 50% -20%,#123044 0%,transparent 45%),var(--bg);
+    color:var(--text);font-family:Arial,Helvetica,sans-serif;
+    transition:.4s;
+}
+body.warning{background:radial-gradient(circle at 50% -20%,#351d08 0%,transparent 50%),#080706}
+body.critical{background:radial-gradient(circle at 50% -20%,#4b1115 0%,transparent 50%),#080607}
+
+header{
+    padding:25px 35px;border-bottom:1px solid var(--border);
+    display:flex;justify-content:space-between;align-items:center;
+}
+.logo{font-size:27px;font-weight:800;letter-spacing:4px;color:var(--cyan)}
+.live{font-size:11px;letter-spacing:2px;color:var(--green)}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green);margin-right:7px}
+
+.container{max-width:1250px;margin:auto;padding:28px}
+.system-status{
+    border:1px solid var(--border);background:var(--panel);
+    padding:18px 20px;margin-bottom:20px;
+    display:flex;align-items:center;gap:15px;
+}
+.status-light{width:13px;height:13px;border-radius:50%;background:var(--green);box-shadow:0 0 20px var(--green)}
+.status-title{font-weight:bold;letter-spacing:1px}
+.status-description{color:var(--muted);font-size:12px;margin-top:5px}
+
+.dashboard{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.panel{
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--border);padding:18px;
+}
+.panel-title{
+    color:var(--cyan);font-size:11px;letter-spacing:2px;
+    margin-bottom:18px;text-transform:uppercase;
+}
+.metric{margin-bottom:17px}
+.metric:last-child{margin-bottom:0}
+.metric-top{display:flex;justify-content:space-between;align-items:center}
+.metric-name{font-size:11px;color:var(--muted);letter-spacing:1px}
+.metric-value{font-size:24px;font-weight:bold}
+.bar{height:5px;background:#17232c;margin-top:8px;overflow:hidden}
+.fill{height:100%;background:var(--cyan);width:50%;transition:.4s}
+
+.sensor-list{display:grid;gap:9px}
+.sensor{
+    padding:11px;background:#091017;border:1px solid #1c2b35;
+    display:flex;justify-content:space-between;align-items:center;
+}
+.sensor-name{font-size:11px;color:var(--muted)}
+.sensor-state{font-size:10px;color:var(--green);letter-spacing:1px}
+.sensor.warning .sensor-state{color:var(--yellow)}
+.sensor.critical .sensor-state{color:var(--red)}
+.sensor.warning{border-color:#76551d}
+.sensor.critical{border-color:#70252d}
+
+.ai-panel{grid-column:span 2}
+.ai-state{font-size:13px;color:var(--cyan);letter-spacing:1px;margin-bottom:12px}
+.ai-message{font-size:15px;line-height:1.6}
+.ai-action{margin-top:18px;color:var(--yellow);font-size:11px;letter-spacing:1px}
+
+.subsystem{margin-top:18px;padding:12px;background:#0b141b;border-left:3px solid var(--cyan)}
+.subsystem-label{color:var(--muted);font-size:9px;letter-spacing:1.5px}
+.subsystem-value{margin-top:5px;font-size:13px;font-weight:bold;color:var(--cyan)}
+.prediction-description{margin-top:16px;color:var(--muted);font-size:12px;line-height:1.6}
+
+.risk-box{margin-top:18px}
+.risk-head{display:flex;justify-content:space-between;align-items:center}
+.risk-value{font-size:25px;font-weight:bold}
+.risk-bar{height:7px;background:#17232c;margin-top:9px}
+.risk-fill{height:100%;width:0;background:var(--green);transition:.5s}
+
+.experiments{margin-top:20px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+button{
+    background:#0b141b;border:1px solid var(--border);color:var(--text);
+    padding:13px 10px;cursor:pointer;font-weight:bold;font-size:10px;
+    letter-spacing:1px;transition:.2s;
+}
+button:hover{border-color:var(--cyan);box-shadow:0 0 15px #39d5ff18}
+button.warning-btn{color:var(--yellow)}
+button.danger-btn{color:var(--red);border-color:#61232a}
+.reset{margin-top:10px;width:100%;color:var(--green)}
+
+.log{
+    margin-top:20px;background:#05090d;border:1px solid var(--border);
+    min-height:130px;max-height:180px;overflow:auto;padding:12px;
+    font-family:monospace;font-size:11px;color:#8da0aa;
+}
+.log div{padding:6px 0;border-bottom:1px solid #101a21}
+.graph{height:90px;display:flex;align-items:end;gap:3px;margin-top:15px}
+.graph-bar{flex:1;min-height:4px;background:var(--cyan);opacity:.65}
+
+.alert-overlay{
+    position:fixed;inset:0;z-index:9999;
+    display:none;align-items:center;justify-content:center;
+    background:rgba(5,0,2,.72);backdrop-filter:blur(5px);
+    pointer-events:none;
+}
+.alert-overlay.show{display:flex}
+.alert-overlay.warning{animation:screenWarning .8s infinite}
+.alert-overlay.critical{animation:screenCritical .55s infinite}
+.alert-box{
+    width:min(760px,90vw);padding:35px;text-align:center;
+    border:2px solid var(--red);background:#100b0d;
+    box-shadow:0 0 60px #ff4d5a55;
+}
+.alert-label{font-size:clamp(32px,7vw,76px);font-weight:900;letter-spacing:8px;color:var(--red)}
+.alert-sub{margin-top:15px;color:#fff;font-size:13px;letter-spacing:3px}
+.alert-detail{margin-top:18px;color:#ff9da4;font-family:monospace;font-size:12px}
+.alert-box.warning{border-color:var(--yellow);box-shadow:0 0 60px #ffc85744}
+.alert-box.warning .alert-label{color:var(--yellow)}
+.alert-box.warning .alert-detail{color:#ffe2a0}
+
+@keyframes screenWarning{
+    0%,100%{background:rgba(45,25,0,.58)}
+    50%{background:rgba(120,70,0,.18)}
+}
+@keyframes screenCritical{
+    0%,100%{background:rgba(90,0,8,.55)}
+    50%{background:rgba(255,0,20,.20)}
+}
+@keyframes pulse{
+    0%,100%{opacity:1}
+    50%{opacity:.35}
+}
+
+body.warning .system-status,
+body.critical .system-status{animation:pulse .8s infinite}
+body.warning .status-light,
+body.critical .status-light{background:var(--red);box-shadow:0 0 20px var(--red)}
+body.warning .live,
+body.critical .live{color:var(--red)}
+body.warning .live-dot,
+body.critical .live-dot{background:var(--red);box-shadow:0 0 12px var(--red)}
+
+@media(max-width:900px){
+    .dashboard{grid-template-columns:1fr}
+    .ai-panel{grid-column:span 1}
+    .experiments{grid-template-columns:1fr 1fr}
+}
+@media(max-width:600px){
+    header{padding:18px}
+    .container{padding:15px}
+    .experiments{grid-template-columns:1fr}
+}
+
+.predictive-solutions{
+  margin-top:14px;
+  padding-top:14px;
+  border-top:1px solid var(--border);
+}
+.solution-title{
+  font-size:11px;
+  letter-spacing:1.8px;
+  color:var(--cyan);
+  margin-bottom:10px;
+  font-weight:800;
+}
+.solution-item{
+  display:flex;
+  gap:10px;
+  margin:9px 0;
+  font-size:12px;
+  line-height:1.45;
+  color:var(--text);
+}
+.solution-step{
+  min-width:22px;height:22px;
+  display:grid;place-items:center;
+  border:1px solid var(--cyan);
+  color:var(--cyan);
+  font-weight:800;
+  font-size:10px;
+}
+.solution-item small{display:block;color:var(--muted);margin-top:2px}
+
+
+.trend-graph{
+  width:100%;height:220px;
+  border:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(0,220,255,.025),rgba(0,0,0,.08));
+  overflow:hidden;
+}
+.trend-graph svg{width:100%;height:100%;display:block}
+.trend-grid{stroke:rgba(130,180,195,.13);stroke-width:1}
+.trend-line{fill:none;stroke:var(--cyan);stroke-width:3;vector-effect:non-scaling-stroke}
+.trend-area{fill:rgba(0,220,255,.08)}
+.trend-dot{fill:var(--cyan)}
+.trend-label{fill:var(--muted);font-size:10px;font-family:inherit}
+
+</style>
+
+<style>
+/* MarsForm target UI — dark aerospace control-room layout */
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;
+  background:
+    radial-gradient(circle at 50% -18%,rgba(24,66,88,.48),transparent 40%),
+    #05080c;
+  color:#e8f1f5;
+  font-family:Arial,Helvetica,sans-serif;
+}
+body.warning{background:radial-gradient(circle at 50% -18%,rgba(91,55,8,.28),transparent 40%),#05080c}
+body.critical{background:radial-gradient(circle at 50% -18%,rgba(95,16,22,.30),transparent 40%),#05080c}
+
+.mf-header{
+  max-width:1432px;margin:0 auto;padding:25px 0 18px;
+  border-bottom:1px solid #243541;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:15px}
+.brand-mark{
+  width:48px;height:48px;border:2px solid var(--cyan);border-radius:50%;
+  display:grid;place-items:center;color:var(--cyan);font-weight:800;font-size:16px;
+  box-shadow:0 0 14px rgba(57,213,255,.18)
+}
+.brand-name{font-size:27px;font-weight:800;letter-spacing:4px}
+.brand-subtitle{margin-top:5px;color:#718692;font-size:12px;letter-spacing:2px}
+.live{font-size:12px;letter-spacing:1.5px;color:var(--green);font-weight:700}
+.live-dot{width:9px;height:9px}
+
+.container{max-width:1432px;margin:0 auto;padding:20px 0 45px}
+.system-status{
+  min-height:98px;margin-bottom:18px;
+  border:1px solid #243541;background:#0b151d;
+  padding:18px 22px;display:flex;align-items:center;gap:16px;
+  border-radius:12px;
+}
+.status-light{width:16px;height:16px;border-radius:50%;flex:none}
+.status-title{font-size:19px;font-weight:800}
+.status-description{font-size:12px;color:#718692;margin-top:5px}
+.status-meta{margin-left:auto;text-align:right;color:#718692;font-size:11px;line-height:1.8}
+
+.main-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(330px,.96fr);gap:18px}
+.left-column,.right-column{display:flex;flex-direction:column;gap:18px}
+.panel{
+  background:#0b1118;border:1px solid #243541;border-radius:12px;
+  padding:18px;overflow:hidden
+}
+.panel-heading{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:14px;font-weight:800;letter-spacing:1.7px;margin-bottom:14px
+}
+.panel-time{font-size:10px;color:#718692;font-weight:400;letter-spacing:.5px}
+
+.metric-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.metric-card{
+  min-height:128px;padding:16px;border:1px solid #243541;
+  border-left:2px solid var(--green);background:#0e1720;border-radius:11px
+}
+.metric-card.warning{border-left-color:var(--yellow)}
+.metric-card.critical{border-left-color:var(--red)}
+.metric-name{font-size:11px;color:#718fa0;letter-spacing:1.2px}
+.metric-number{font-size:30px;font-weight:800;margin:8px 0 12px}
+.metric-number small{font-size:12px;color:#718692;font-weight:500}
+.bar{height:4px;background:#17252e;border-radius:4px;overflow:hidden}
+.fill{height:100%;background:var(--green);transition:width .25s}
+.metric-foot{display:flex;justify-content:space-between;margin-top:11px;color:#718692;font-size:10px}
+.nominal{color:var(--green);font-weight:700}
+
+.ai-head{display:flex;gap:12px;align-items:center;margin:5px 0 15px}
+.ai-badge{
+  width:41px;height:41px;border:1px solid var(--cyan);border-radius:8px;
+  display:grid;place-items:center;color:var(--cyan);font-size:17px;font-weight:800
+}
+.ai-state{font-size:16px;font-weight:800;letter-spacing:.5px}
+.ai-sub{font-size:11px;color:#718692;margin-top:4px}
+.ai-message{
+  min-height:100px;padding:15px 13px;border:1px solid #243541;
+  border-radius:8px;background:#050a0e;font-size:12px;line-height:1.65
+}
+.ai-action{
+  margin-top:12px;padding:13px;border-left:2px solid var(--cyan);
+  background:#07141b;color:var(--cyan);font-size:11px
+}
+.risk-head{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#718fa0;letter-spacing:1.2px}
+.risk-value{font-size:23px;color:var(--green)}
+.risk-bar{height:7px;background:#17252e;border-radius:8px;overflow:hidden;margin:13px 0}
+.risk-fill{height:100%;background:var(--green);transition:width .3s}
+.subsystem{
+  padding:11px 12px;background:#0b171f;border-left:2px solid var(--cyan);margin-top:10px
+}
+.subsystem-label{font-size:9px;letter-spacing:1.5px;color:#718fa0}
+.subsystem-value{font-size:13px;font-weight:800;color:var(--green);margin-top:5px}
+.prediction-description{font-size:11px;line-height:1.55;color:#b5c4cb;margin-top:10px}
+.predictive-solutions{margin-top:14px;padding-top:13px;border-top:1px solid #243541}
+.solution-title{font-size:10px;letter-spacing:1.5px;color:var(--cyan);font-weight:800;margin-bottom:8px}
+.solution-item{display:flex;gap:9px;margin:9px 0;font-size:11px;line-height:1.35}
+.solution-step{
+  width:21px;height:21px;flex:none;display:grid;place-items:center;
+  border:1px solid var(--cyan);color:var(--cyan);font-size:9px;font-weight:800
+}
+.solution-item b{font-size:11px}
+.solution-item small{display:block;color:#718692;margin-top:2px;font-size:10px}
+
+.trend-graph{
+  width:100%;height:175px;border:1px solid #1b2b35;border-radius:7px;
+  background:
+    linear-gradient(rgba(111,146,160,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(111,146,160,.04) 1px,transparent 1px),
+    #081016;
+  background-size:100% 25%,10% 100%;
+  overflow:hidden
+}
+.trend-graph svg{width:100%;height:100%;display:block}
+.trend-grid{stroke:rgba(130,180,195,.12);stroke-width:1}
+.trend-line{fill:none;stroke:var(--cyan);stroke-width:3;vector-effect:non-scaling-stroke}
+.trend-area{fill:rgba(57,213,255,.07)}
+.trend-dot{fill:var(--cyan)}
+.graph-caption{display:flex;justify-content:space-between;margin-top:8px;color:#718692;font-size:9px;letter-spacing:1px}
+
+.cost-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.cost-card{border:1px solid #243541;border-radius:8px;padding:12px;background:#071016}
+.cost-card span{display:block;font-size:9px;color:#718fa0;letter-spacing:1px}
+.cost-card b{display:block;font-size:18px;margin-top:6px}
+.cost-note{font-size:10px;color:#718692;line-height:1.5;margin-top:10px}
+
+.experiments-panel{margin-top:18px}
+.experiments{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.experiments button,.reset{
+  background:#09131a;border:1px solid #2b4654;color:#a8d7e4;
+  padding:11px 8px;border-radius:7px;font-size:10px;letter-spacing:.7px;
+  cursor:pointer
+}
+.experiments button:hover{border-color:var(--cyan);color:#fff}
+.experiments .danger-btn{border-color:#7a2830;color:#ff7c85}
+.experiments .warning-btn{border-color:#806522;color:#ffd77a}
+.reset{margin-top:10px;width:100%;color:#718692}
+
+.log{
+  margin-top:14px;padding:12px 14px;border:1px solid #1e303b;
+  background:#070d12;color:#718692;font-size:10px;line-height:1.7;border-radius:8px
+}
+
+/* Side warning — does not cover the header/logo */
+.alert-overlay{
+  position:fixed;top:112px;right:24px;z-index:9999;
+  display:none;width:min(390px,calc(100vw - 32px));pointer-events:none
+}
+.alert-overlay.show{display:block}
+.alert-box{
+  padding:18px 20px;background:rgba(7,13,18,.97);
+  border:1px solid var(--yellow);border-right:4px solid var(--yellow);
+  box-shadow:0 0 26px rgba(255,200,87,.22);border-radius:8px
+}
+.alert-overlay.critical .alert-box{border-color:var(--red);border-right-color:var(--red);box-shadow:0 0 28px rgba(255,77,90,.25)}
+.alert-title{font-size:28px;font-weight:900;letter-spacing:4px}
+.alert-sub{font-size:10px;letter-spacing:1.5px;margin-top:6px}
+.alert-detail{font-size:11px;color:#718692;margin-top:10px;line-height:1.5}
+@keyframes sideWarning{0%,100%{opacity:1}50%{opacity:.45}}
+@keyframes sideCritical{0%,100%{opacity:1}50%{opacity:.65}}
+.alert-overlay.warning .alert-box{animation:sideWarning .85s infinite}
+.alert-overlay.critical .alert-box{animation:sideCritical .55s infinite}
+
+@media(max-width:900px){
+  .mf-header,.container{margin-left:18px;margin-right:18px}
+  .main-grid{grid-template-columns:1fr}
+  .experiments{grid-template-columns:1fr 1fr}
+  .status-meta{display:none}
+}
+@media(max-width:560px){
+  .metric-grid{grid-template-columns:1fr}
+  .brand-subtitle{font-size:9px}
+  .brand-name{font-size:22px}
+  .experiments{grid-template-columns:1fr}
+}
+</style>
+
+</head>
+
+
+<body>
+
+<header class="mf-header">
+  <div class="brand">
+    <div class="brand-mark">MF</div>
+    <div>
+      <div class="brand-name">MARSFORM</div>
+      <div class="brand-subtitle">AUTONOMOUS LIFE SUPPORT CONTROL SYSTEM</div>
+    </div>
+  </div>
+  <div class="live"><span class="live-dot"></span>LIVE TELEMETRY</div>
+</header>
+
+<main class="container">
+
+  <section class="system-status">
+    <div class="status-light" id="statusLight"></div>
+    <div class="status-main">
+      <div class="status-title" id="systemStatus">SYSTEM OPERATIONAL</div>
+      <div class="status-description" id="statusDescription">All life-support parameters within safe limits</div>
+    </div>
+    <div class="status-meta">
+      <div>HABITAT: MARS-01</div>
+      <div>AI CORE: ONLINE</div>
+      <div>UPLINK: STABLE</div>
+    </div>
+  </section>
+
+  <div class="main-grid">
+
+    <div class="left-column">
+
+      <section class="panel telemetry-panel">
+        <div class="panel-heading">
+          <span>LIVE TELEMETRY</span>
+          <span class="panel-time" id="clock">--:--:--</span>
+        </div>
+
+        <div class="metric-grid">
+          <div class="metric-card">
+            <div class="metric-name">OXYGEN CONCENTRATION</div>
+            <div class="metric-number"><span id="o2Value">21.0</span><small>%</small></div>
+            <div class="bar"><div class="fill" id="o2Bar"></div></div>
+            <div class="metric-foot"><span class="nominal" id="status-o2">● NORMAL</span><span>SENSOR-01</span></div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-name">CARBON DIOXIDE</div>
+            <div class="metric-number"><span id="co2Value">0.04</span><small>%</small></div>
+            <div class="bar"><div class="fill" id="co2Bar"></div></div>
+            <div class="metric-foot"><span class="nominal" id="status-co2">● NORMAL</span><span>SENSOR-02</span></div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-name">HABITAT PRESSURE</div>
+            <div class="metric-number"><span id="pressureValue">101.3</span><small> kPa</small></div>
+            <div class="bar"><div class="fill" id="pressureBar"></div></div>
+            <div class="metric-foot"><span class="nominal" id="status-pressure">● NORMAL</span><span>SENSOR-03</span></div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-name">INTERNAL TEMPERATURE</div>
+            <div class="metric-number"><span id="temperatureValue">22.0</span><small> °C</small></div>
+            <div class="bar"><div class="fill" id="temperatureBar"></div></div>
+            <div class="metric-foot"><span class="nominal" id="status-temperature">● NORMAL</span><span>SENSOR-04</span></div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-name">HUMIDITY</div>
+            <div class="metric-number"><span id="humidityValue">45</span><small>%</small></div>
+            <div class="bar"><div class="fill" id="humidityBar"></div></div>
+            <div class="metric-foot"><span class="nominal" id="status-humidity">● NORMAL</span><span>SENSOR-05</span></div>
+          </div>
+
+          <div class="metric-card">
+            <div class="metric-name">WATER RESERVE</div>
+            <div class="metric-number"><span id="waterValue">100</span><small>%</small></div>
+            <div class="bar"><div class="fill" id="waterBar"></div></div>
+            <div class="metric-foot"><span class="nominal" id="status-water">● NORMAL</span><span>SENSOR-06</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel history-panel">
+        <div class="panel-heading">
+          <span>TELEMETRY HISTORY</span>
+          <span class="panel-time">LAST 30 READINGS</span>
+        </div>
+        <div id="graph" class="trend-graph">
+          <svg id="trendSvg" viewBox="0 0 760 220" preserveAspectRatio="none" aria-label="Telemetry trend graph"></svg>
+        </div>
+        <div class="graph-caption">
+          <span>THERMAL CONTROL TREND</span>
+          <span id="trendCurrent">22.0 °C</span>
+        </div>
+      </section>
+
+    </div>
+
+    <aside class="right-column">
+
+      <section class="panel decision-panel">
+        <div class="panel-heading">
+          <span>AI DECISION ENGINE</span>
+          <span class="panel-time">MF-AI CORE</span>
+        </div>
+
+        <div class="ai-head">
+          <div class="ai-badge">AI</div>
+          <div>
+            <div class="ai-state" id="aiState">MONITORING</div>
+            <div class="ai-sub">Autonomous analysis active</div>
+          </div>
+        </div>
+
+        <div class="ai-message" id="aiMessage">
+          Receiving telemetry from life-support subsystems.<br><br>
+          No abnormal conditions detected.
+        </div>
+
+        <div class="ai-action" id="aiAction">ACTION: Continuous autonomous monitoring</div>
+      </section>
+
+      <section class="panel predictive-panel">
+        <div class="panel-heading">
+          <span>FAILURE PREDICTION</span>
+          <span class="panel-time">AI PREDICTIVE MODEL</span>
+        </div>
+
+        <div class="risk-head">
+          <span>ESTIMATED FAILURE RISK</span>
+          <strong class="risk-value" id="riskValue">0%</strong>
+        </div>
+        <div class="risk-bar"><div class="risk-fill" id="riskFill"></div></div>
+
+        <div class="subsystem">
+          <div class="subsystem-label">AFFECTED SUBSYSTEM</div>
+          <div id="faultyComponent" class="subsystem-value">NO FAULT DETECTED</div>
+        </div>
+
+        <div id="predictionText" class="prediction-description">
+          Current telemetry is stable. AI predicts low probability of near-term system failure.
+        </div>
+
+        <div class="predictive-solutions">
+          <div class="solution-title">RECOMMENDED RECOVERY PATH</div>
+          <div id="solutionList">
+            <div class="solution-item">
+              <span class="solution-step">1</span>
+              <div><b>Continuous monitoring</b><small>Maintain current life-support configuration.</small></div>
+            </div>
+            <div class="solution-item">
+              <span class="solution-step">2</span>
+              <div><b>Verify telemetry</b><small>Compare critical readings with backup sensors.</small></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel cost-panel">
+        <div class="panel-heading">
+          <span>RESOURCE &amp; COST ANALYSIS</span>
+          <span class="panel-time">SIMULATION</span>
+        </div>
+        <div class="cost-grid">
+          <div class="cost-card"><span>EMERGENCY MISSION</span><b>$1.2B</b></div>
+          <div class="cost-card"><span>CREW TRANSPORT</span><b>$800M</b></div>
+          <div class="cost-card"><span>EMERGENCY REPAIR</span><b id="savingsValue">$0</b></div>
+          <div class="cost-card"><span>SYSTEM MONITORING</span><b>$4.8M</b></div>
+        </div>
+        <div class="cost-note">Predictive intervention can reduce the estimated impact of cascading failures.</div>
+      </section>
+
+    </aside>
+  </div>
+
+  <section class="panel experiments-panel">
+    <div class="panel-heading"><span>EMERGENCY EXPERIMENTS</span><span class="panel-time">SIMULATION MODE</span></div>
+    <div class="experiments">
+      <button onclick="startExperiment('leak')">SIMULATE AIR LEAK</button>
+      <button onclick="startExperiment('oxygen')">SIMULATE O₂ DECREASE</button>
+      <button onclick="startExperiment('co2')">SIMULATE CO₂ RISE</button>
+      <button onclick="startExperiment('water')">SIMULATE WATER LOSS</button>
+      <button onclick="startExperiment('thermal')">SIMULATE THERMAL FAILURE</button>
+      <button onclick="startExperiment('humidity')">SIMULATE HUMIDITY FAILURE</button>
+      <button class="danger-btn" onclick="startFullEmergency()">FULL EMERGENCY</button>
+      <button class="warning-btn" onclick="activateDemoWarning()">DEMO WARNING</button>
+    </div>
+    <button class="reset" onclick="resetSystem()">RESET ALL SYSTEMS</button>
+  </section>
+
+  <div class="log" id="log">
+    <div>[SYSTEM] MarsForm initialized.</div>
+  </div>
+
+</main>
+
+<!-- Side warning: it never covers the MarsForm logo/header. -->
+<div class="alert-overlay" id="alertOverlay">
+  <div class="alert-box" id="alertBox">
+    <div class="alert-title" id="alertLabel">WARNING</div>
+    <div class="alert-sub" id="alertSub">ABNORMAL TELEMETRY DETECTED</div>
+    <div class="alert-detail" id="alertDetail"></div>
+  </div>
+</div>
+
+<script>
+let telemetry = {
+    o2:21.0,
+    co2:0.04,
+    pressure:101.3,
+    temperature:22,
+    humidity:45,
+    water:100
+};
+
+const initialTelemetry = {...telemetry};
+let timer = null;
+let demoTimer = null;
+let previousSystemState = "NORMAL";
+let graphData = [];
+let estimatedSavings = 0;
+
+const experiments = {
+    leak: {name:"AIR LEAK / LOSS OF PRESSURE", component:"Habitat Pressure Control", action:"Isolate damaged section and activate pressure reserve", cost:8500, update:()=>telemetry.pressure-=1.6},
+    oxygen: {name:"OXYGEN GENERATION FAILURE", component:"Oxygen Control System", action:"Activate backup O₂ generation system", cost:12000, update:()=>telemetry.o2-=0.3},
+    co2: {name:"CO₂ SCRUBBER FAILURE", component:"CO₂ Scrubbing System", action:"Activate backup CO₂ scrubber", cost:9200, update:()=>telemetry.co2+=0.15},
+    water: {name:"WATER SYSTEM LEAK", component:"Water Recycling System", action:"Isolate water loop and activate reserve tank", cost:6700, update:()=>telemetry.water-=3},
+    thermal: {name:"THERMAL CONTROL FAILURE", component:"Thermal Control System", action:"Activate backup thermal regulation", cost:15500, update:()=>telemetry.temperature+=1.2},
+    humidity: {name:"HUMIDITY CONTROL FAILURE", component:"Humidity Control System", action:"Activate environmental control backup", cost:5400, update:()=>telemetry.humidity+=3}
+};
+
+function alertSound(){
+    try{
+        const C=window.AudioContext||window.webkitAudioContext;
+        const a=new C(),o=a.createOscillator(),g=a.createGain();
+        o.type="square";o.frequency.value=800;
+        g.gain.setValueAtTime(.08,a.currentTime);
+        g.gain.exponentialRampToValueAtTime(.001,a.currentTime+.35);
+        o.connect(g);g.connect(a.destination);o.start();o.stop(a.currentTime+.35);
+    }catch(e){}
+}
+
+function showAlert(type, detail=""){
+    const overlay=document.getElementById("alertOverlay");
+    const box=document.getElementById("alertBox");
+    overlay.className="alert-overlay show "+type;
+    box.className="alert-box "+type;
+    document.getElementById("alertLabel").textContent=type==="critical"?"EMERGENCY":"WARNING";
+    document.getElementById("alertSub").textContent=type==="critical"?"LIFE-SUPPORT FAILURE DETECTED":"ABNORMAL TELEMETRY DETECTED";
+    document.getElementById("alertDetail").textContent=detail;
+}
+
+function hideAlert(){
+    document.getElementById("alertOverlay").className="alert-overlay";
+}
+
+function setSensor(id,statusId,state){
+    const el=document.getElementById(id),st=document.getElementById(statusId);
+    el.classList.remove("warning","critical");
+    if(state==="WARNING"){el.classList.add("warning");st.textContent="● WARNING"}
+    else if(state==="CRITICAL"){el.classList.add("critical");st.textContent="● CRITICAL"}
+    else st.textContent="● NOMINAL";
+}
+
+function renderTelemetry(){
+    document.getElementById("o2Value").textContent=telemetry.o2.toFixed(1)+"%";
+    document.getElementById("co2Value").textContent=telemetry.co2.toFixed(2)+"%";
+    document.getElementById("pressureValue").textContent=telemetry.pressure.toFixed(1);
+    document.getElementById("temperatureValue").textContent=telemetry.temperature.toFixed(1)+"°C";
+    document.getElementById("humidityValue").textContent=Math.round(telemetry.humidity)+"%";
+    document.getElementById("waterValue").textContent=Math.max(0,Math.round(telemetry.water))+"%";
+
+    document.getElementById("o2Bar").style.width=Math.min(100,telemetry.o2/25*100)+"%";
+    document.getElementById("co2Bar").style.width=Math.min(100,telemetry.co2/1*100)+"%";
+    document.getElementById("pressureBar").style.width=Math.min(100,telemetry.pressure/120*100)+"%";
+    document.getElementById("temperatureBar").style.width=Math.min(100,Math.max(0,(telemetry.temperature+10)/50*100))+"%";
+    document.getElementById("humidityBar").style.width=Math.min(100,telemetry.humidity)+"%";
+    document.getElementById("waterBar").style.width=Math.max(0,Math.min(100,telemetry.water))+"%";
+
+    graphData.push(telemetry.temperature);
+    if(graphData.length>30) graphData.shift();
+    const graph=document.getElementById("graph");
+    graph.innerHTML="";
+    const min=Math.min(...graphData),max=Math.max(...graphData);
+    graphData.forEach(v=>{
+        const b=document.createElement("div");
+        b.className="graph-bar";
+        b.style.height=Math.max(8,((v-min)/((max-min)||1))*100)+"%";
+        graph.appendChild(b);
+    });
+}
+
+function analyseSystem(){
+    let critical=[],warnings=[],risk=0;
+
+    if(telemetry.o2<19.5){critical.push("Oxygen Control System");risk+=25}
+    else if(telemetry.o2<20){warnings.push("Oxygen Control System");risk+=12}
+
+    if(telemetry.co2>0.8){critical.push("CO₂ Scrubbing System");risk+=25}
+    else if(telemetry.co2>0.5){warnings.push("CO₂ Scrubbing System");risk+=15}
+
+    if(telemetry.pressure<90||telemetry.pressure>110){critical.push("Habitat Pressure Control");risk+=25}
+    else if(telemetry.pressure<97||telemetry.pressure>105){warnings.push("Habitat Pressure Control");risk+=15}
+
+    if(telemetry.temperature<15||telemetry.temperature>28){critical.push("Thermal Control System");risk+=20}
+    else if(telemetry.temperature<18||telemetry.temperature>27){warnings.push("Thermal Control System");risk+=12}
+
+    if(telemetry.humidity<20||telemetry.humidity>80){critical.push("Humidity Control System");risk+=15}
+    else if(telemetry.humidity<30||telemetry.humidity>70){warnings.push("Humidity Control System");risk+=10}
+
+    if(telemetry.water<25){critical.push("Water Recycling System");risk+=20}
+    else if(telemetry.water<40){warnings.push("Water Recycling System");risk+=12}
+
+    risk=Math.min(99,risk);
+    document.getElementById("riskValue").textContent=risk+"%";
+    document.getElementById("riskFill").style.width=risk+"%";
+
+    if(risk<30) document.getElementById("riskFill").style.background="var(--green)";
+    else if(risk<70) document.getElementById("riskFill").style.background="var(--yellow)";
+    else document.getElementById("riskFill").style.background="var(--red)";
+
+    const faulty=[...new Set([...critical,...warnings])];
+    document.getElementById("faultyComponent").textContent=faulty.length?faulty.join(" • "):"NO FAULT DETECTED";
+    document.getElementById("faultyComponent").style.color=critical.length?"var(--red)":warnings.length?"var(--yellow)":"var(--green)";
+
+    estimatedSavings=Math.max(0,risk*25000);
+    document.getElementById("savingsValue").textContent="$"+Math.round(estimatedSavings).toLocaleString();
+
+    if(critical.length){
+        activateCritical(critical);
+    }else if(warnings.length){
+        activateWarning(warnings);
+    }else{
+        activateNormal();
+    }
+}
+
+function activateNormal(){
+    document.body.classList.remove("warning","critical");
+    hideAlert();
+    document.getElementById("systemStatus").textContent="SYSTEM OPERATIONAL";
+    document.getElementById("statusDescription").textContent="All life-support parameters within safe limits";
+    document.getElementById("aiState").textContent="MONITORING";
+    document.getElementById("aiMessage").innerHTML="Receiving telemetry from life-support subsystems.<br><br>No abnormal conditions detected.";
+    document.getElementById("aiAction").textContent="ACTION: Continuous autonomous monitoring";
+    document.getElementById("statusLight").style.background="var(--green)";
+    document.getElementById("statusLight").style.boxShadow="0 0 20px var(--green)";
+    previousSystemState="NORMAL";
+}
+
+function activateWarning(components){
+  if(window.renderRecoverySolutions) window.renderRecoverySolutions((components||["ABNORMAL TELEMETRY"])[0]);
+    const component=components.join(", ");
+    document.body.classList.remove("critical");
+    document.body.classList.add("warning");
+    document.getElementById("systemStatus").textContent="SYSTEM WARNING";
+    document.getElementById("statusDescription").textContent="Affected subsystem: "+component;
+    document.getElementById("aiState").textContent="ANALYSING";
+    document.getElementById("aiMessage").innerHTML="<strong style='color:var(--yellow)'>ABNORMAL TELEMETRY PATTERN DETECTED.</strong><br><br>AI is analysing the deviation before escalation.";
+    document.getElementById("aiAction").textContent="ACTION: Preventive adjustment and subsystem inspection";
+    showAlert("warning",component);
+    if(previousSystemState!=="WARNING") alertSound();
+    previousSystemState="WARNING";
+}
+
+function activateCritical(components){
+  if(window.renderRecoverySolutions) window.renderRecoverySolutions((components||["SYSTEM FAILURE"])[0]);
+    const component=components.join(", ");
+    document.body.classList.remove("warning");
+    document.body.classList.add("critical");
+    document.getElementById("systemStatus").textContent="CRITICAL SYSTEM ALERT";
+    document.getElementById("statusDescription").textContent="Fault detected: "+component;
+    document.getElementById("aiState").textContent="EMERGENCY RESPONSE";
+    document.getElementById("aiMessage").innerHTML="<strong style='color:var(--red)'>AI HAS DETECTED A SYSTEM FAILURE.</strong><br><br>Emergency protocols initiated to protect the habitat.";
+    document.getElementById("aiAction").textContent="ACTION: Isolating affected systems • Protecting habitat";
+    showAlert("critical",component);
+    if(previousSystemState!=="CRITICAL") alertSound();
+    previousSystemState="CRITICAL";
+}
+
+function addLog(message,alert=false){
+    const log=document.getElementById("log"),entry=document.createElement("div");
+    entry.textContent="["+new Date().toLocaleTimeString()+"] "+message;
+    if(alert) entry.style.color="var(--red)";
+    log.prepend(entry);
+    while(log.children.length>10) log.removeChild(log.lastChild);
+}
+
+function startExperiment(type){
+    clearInterval(timer);clearInterval(demoTimer);
+    const e=experiments[type];
+    addLog("[EXPERIMENT] "+e.name);
+    let step=0;
+    timer=setInterval(()=>{
+        step++;
+        e.update();
+        addLog("[AI] "+e.name+" — telemetry deviation "+(step*5)+"%");
+        renderTelemetry();
+        analyseSystem();
+        if(step>=20){
+            clearInterval(timer);
+            addLog("[PREDICTION] Critical stage reached.",true);
+        }
+    },500);
+}
+
+function startFullEmergency(){
+    clearInterval(timer);clearInterval(demoTimer);
+    addLog("[EMERGENCY] Multiple system failures detected.",true);
+    let step=0;
+    timer=setInterval(()=>{
+        step++;
+        telemetry.pressure-=1;
+        telemetry.o2-=.15;
+        telemetry.co2+=.08;
+        telemetry.water-=2;
+        telemetry.temperature+=.5;
+        telemetry.humidity+=1.5;
+        renderTelemetry();analyseSystem();
+        if(step>=15) clearInterval(timer);
+    },500);
+}
+
+function activateDemoWarning(){
+    clearInterval(timer);clearInterval(demoTimer);
+    telemetry.pressure=96;
+    renderTelemetry();
+    analyseSystem();
+    addLog("[DEMO] Warning state activated.",true);
+    demoTimer=setTimeout(()=>{
+        telemetry={...initialTelemetry};
+        renderTelemetry();
+        analyseSystem();
+        addLog("[DEMO] Warning cleared.");
+    },5000);
+}
+
+function resetSystem(){
+    clearInterval(timer);clearInterval(demoTimer);
+    telemetry={...initialTelemetry};
+    graphData=[];
+    estimatedSavings=0;
+    renderTelemetry();
+    analyseSystem();
+    document.getElementById("riskValue").textContent="0%";
+    document.getElementById("riskFill").style.width="0%";
+    document.getElementById("faultyComponent").textContent="NO FAULT DETECTED";
+    document.getElementById("savingsValue").textContent="$0";
+    addLog("[SYSTEM] All systems restored.");
+}
+
+renderTelemetry();
+analyseSystem();
+addLog("TELEMETRY UPDATE INTERVAL: 2 SECONDS");
+setInterval(()=>{
+    if(!timer){
+        renderTelemetry();
+        analyseSystem();
+    }
+},2000);
+</script>
+
+<script>
+(function(){
+const recoveryPaths = {
+  "AIR LEAK": [
+    ["1","Изолировать предполагаемый модуль","Закрыть соответствующий гермозатвор и локализовать участок утечки."],
+    ["2","Проверить давление","Сравнить давление до и после изоляции участка."],
+    ["3","Стабилизировать O₂","При необходимости включить резервную подачу кислорода."]
+  ],
+  "O₂ DECREASE": [
+    ["1","Проверить контур подачи O₂","Проверить клапаны, подачу и резервный баллон."],
+    ["2","Ограничить расход","Снизить несущественное потребление до стабилизации."],
+    ["3","Перейти на резерв","Подключить резервный источник при продолжающемся падении."]
+  ],
+  "CO₂ RISE": [
+    ["1","Проверить очистку CO₂","Проверить работу фильтров и вентиляционного контура."],
+    ["2","Усилить циркуляцию","Перевести систему очистки в усиленный режим."],
+    ["3","Контролировать O₂","Одновременно контролировать O₂ и давление."]
+  ],
+  "WATER LOSS": [
+    ["1","Изолировать контур","Перекрыть подозрительный участок водяной системы."],
+    ["2","Проверить резервуар","Проверить уровень и датчики утечки."],
+    ["3","Включить резерв","Перейти на резервный запас воды."]
+  ],
+  "THERMAL FAILURE": [
+    ["1","Проверить термоконтур","Проверить нагреватели, радиаторы и датчики."],
+    ["2","Стабилизировать температуру","Перевести климатический контур в безопасный режим."],
+    ["3","Контролировать тренд","Следить за скоростью изменения температуры."]
+  ],
+  "HUMIDITY FAILURE": [
+    ["1","Проверить увлажнение","Проверить датчик и исполнительный контур."],
+    ["2","Скорректировать вентиляцию","Уменьшить пересушивание или избыточную конденсацию."],
+    ["3","Перепроверить датчик","Сравнить показания с резервным каналом."]
+  ]
+};
+
+function renderSolutions(problem){
+  const box=document.getElementById("solutionList");
+  if(!box) return;
+  const key=Object.keys(recoveryPaths).find(k => problem && problem.toUpperCase().includes(k));
+  const path=recoveryPaths[key || "AIR LEAK"];
+  box.innerHTML=path.map(x=>`
+    <div class="solution-item">
+      <span class="solution-step">${x[0]}</span>
+      <div><b>${x[1]}</b><small>${x[2]}</small></div>
+    </div>`).join("");
+}
+window.renderRecoverySolutions=renderSolutions;
+
+// Replace the old canvas graph renderer with a responsive line trend.
+window.updateGraph=function(values){
+  const svg=document.getElementById("trendSvg");
+  if(!svg || !values || values.length<2) return;
+  const w=760,h=220,p=22;
+  const min=Math.min(...values), max=Math.max(...values);
+  const span=(max-min)||1;
+  const pts=values.map((v,i)=>{
+    const x=p+i*(w-2*p)/(values.length-1);
+    const y=h-p-(v-min)/span*(h-2*p);
+    return [x,y];
+  });
+  const d=pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area=d+" L "+pts[pts.length-1][0].toFixed(1)+" "+(h-p)+" L "+pts[0][0].toFixed(1)+" "+(h-p)+" Z";
+  let grid="";
+  for(let i=1;i<5;i++){
+    const y=p+i*(h-2*p)/5;
+    grid+=`<line class="trend-grid" x1="${p}" y1="${y}" x2="${w-p}" y2="${y}"/>`;
+  }
+  svg.innerHTML=grid+
+    `<path class="trend-area" d="${area}"/>`+
+    `<path class="trend-line" d="${d}"/>`+
+    pts.filter((_,i)=>i%Math.max(1,Math.floor(pts.length/10))===0).map(q=>`<circle class="trend-dot" cx="${q[0]}" cy="${q[1]}" r="3"/>`).join("");
+};
+
+// Keep logo/header above alert layer visually.
+const header=document.querySelector("header,.topbar,.navbar");
+if(header) header.style.position="relative";
+})();
+</script>
+
+
+<script>
+(function(){
+  function tick(){
+    const el=document.getElementById("clock");
+    if(el) el.textContent=new Date().toLocaleTimeString("en-GB",{hour12:false});
+  }
+  tick(); setInterval(tick,1000);
+})();
+</script>
+
+</body>
+</html>
+
+<!-- MarsForm UI update v2: side alert + line telemetry graph + predictive recovery paths -->
